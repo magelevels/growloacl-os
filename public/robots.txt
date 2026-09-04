@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://growloacl-os.taylorrbyt.workers.dev/sitemap.xml

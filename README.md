@@ -1,53 +1,24 @@
-# GrowLocal OS V7
+# GrowLocal OS V8 — Production-ready static release
 
-# GrowLocal OS V6
+This release restructures GrowLocal for Cloudflare Workers Static Assets.
 
-A local-first commercial MVP for delivering a recurring growth service to local businesses.
+## Routes
+- `/` — public customer-facing marketing site
+- `/app/` — GrowLocal OS demo workspace
+- `/privacy/` — prototype privacy notice
+- `/terms/` — prototype terms
+- `/404.html` — custom not-found page
 
-## Open it
+## Deployment
+Cloudflare Workers can deploy this repository with:
 
-1. Double-click `landing.html` for the public sales site.
-2. Double-click `index.html` for the GrowLocal OS workspace.
-3. No installation, server, API key or subscription is required for the local demo.
+```bash
+npx wrangler deploy
+```
 
-## What V6 includes
+`wrangler.jsonc` serves `./public` as static assets and keeps the free workers.dev route enabled.
 
-- Premium responsive SaaS interface
-- Agency HQ with MRR, pipeline, close-rate and portfolio visibility
-- Multi-client workspaces with instant switching
-- Separate 30-day plan progress per client
-- Growth score and revenue-opportunity modelling
-- Content Studio with commercially focused concepts
-- Campaign Lab and offer modelling
-- Review-response workflow
-- Lead pipeline CRM
-- Client monthly reporting with print / Save as PDF
-- Workspace activity history
-- JSON backup / restore for local data
-- Duplicate / delete client workspace controls
-- Personalised proposal generator
-- Account, billing and integration readiness screen
-- Public conversion-focused landing page and pricing
-- Browser localStorage persistence
-- Command palette (`⌘ K` on Mac / `Ctrl K` elsewhere)
+## Important product status
+V8 remains a service-led validation product. The demo stores workspace state in localStorage. No real authentication, shared cloud database, payment processing, analytics or external AI APIs are connected in this release.
 
-## Production connections still required
-
-The local product intentionally does not contain private credentials. To take it live as a SaaS, connect:
-
-- authentication / user accounts
-- a hosted database
-- Stripe subscriptions
-- a model API for true generative AI
-- analytics / social / CRM data sources
-- production hosting and a domain
-
-The current UI labels those integrations as not connected rather than pretending they are live.
-
-## Recommended commercial use now
-
-Use `landing.html` to introduce GrowLocal, then demo a prospect's business inside `index.html`. Create a workspace for each prospect/client, personalise their growth profile, generate a plan and export a client report. This supports a service-first model while the SaaS integrations are being validated.
-
-
-## V7 additions
-Use the **Launch Toolkit** button in the bottom-right of the dashboard for demo mode, readiness tracking, pitch copying, printing, and quick backup export. See `SALES-PLAYBOOK.md` for the recommended sales process.
+Do not store sensitive or confidential client data in the demo.
