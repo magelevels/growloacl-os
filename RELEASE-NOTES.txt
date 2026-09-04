@@ -1,0 +1,26 @@
+GrowLocal OS V7
+
+Recommended starting file: start.html
+
+Included:
+- Public sales website
+- GrowLocal OS dashboard
+- Agency HQ
+- Multi-client workspaces
+- Lead pipeline / CRM
+- Growth scoring and opportunity modelling
+- 30-day plan tracking
+- Content and campaign workflows
+- Reputation/review tools
+- Client reports and proposal generation
+- Workspace backup/restore
+- Launch Toolkit
+- Demo workspace loader
+- Sales playbook
+
+External connections intentionally not active yet:
+- Authentication
+- Cloud database
+- Stripe
+- AI API
+- Live analytics/social integrations

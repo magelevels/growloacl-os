@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>GrowLocal OS — Growth, simplified.</title>
+  <meta name="description" content="A modern growth operating system for local businesses." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-wrap">
+        <div class="brand-mark"><span></span><span></span><span></span></div>
+        <div><div class="brand-name">GrowLocal</div><div class="brand-version">OS · v6</div></div>
+      </div>
+      <div class="workspace-pill"><span class="live-dot"></span><div><small>Workspace</small><strong id="sidebarBusiness">Your Demo Client</strong></div><button class="icon-btn" id="workspaceBtn" title="Edit client">⌁</button></div>
+      <nav class="nav" id="nav">
+        <button class="nav-item active" data-page="dashboard"><span class="nav-icon">⌂</span><span>Overview</span></button>
+        <button class="nav-item" data-page="plan"><span class="nav-icon">◫</span><span>Growth plan</span><span class="nav-badge">30</span></button>
+        <button class="nav-item" data-page="content"><span class="nav-icon">✦</span><span>Content studio</span></button>
+        <button class="nav-item" data-page="offers"><span class="nav-icon">◇</span><span>Campaigns</span></button>
+        <button class="nav-item" data-page="reviews"><span class="nav-icon">♡</span><span>Reputation</span></button>
+        <button class="nav-item" data-page="insights"><span class="nav-icon">↗</span><span>Insights</span></button>
+        <button class="nav-item" data-page="leads"><span class="nav-icon">◉</span><span>Lead pipeline</span><span class="nav-badge" id="leadCountBadge">0</span></button>
+        <button class="nav-item" data-page="reports"><span class="nav-icon">▤</span><span>Client reports</span></button>
+        <div class="nav-divider"></div>
+        <button class="nav-item" data-page="agency"><span class="nav-icon">◈</span><span>Agency HQ</span></button><button class="nav-item" data-page="clients"><span class="nav-icon">◎</span><span>Clients</span><span class="nav-badge" id="clientCountBadge">1</span></button><button class="nav-item" data-page="account"><span class="nav-icon">◌</span><span>Account & billing</span></button>
+        <button class="nav-item" data-page="sales"><span class="nav-icon">£</span><span>GrowLocal offer</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="plan-usage"><div class="usage-top"><span>Growth Partner</span><span>72%</span></div><div class="usage-track"><i></i></div><small>8 client actions left this month</small></div>
+        <button class="profile-chip"><span class="avatar">TP</span><span><strong>Your agency</strong><small>Owner workspace</small></span><span>•••</span></button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu">☰</button>
+        <div><div class="breadcrumb"><span>GrowLocal</span><b>/</b><span id="breadcrumb">Overview</span></div><h1 id="pageTitle">Good morning <span class="title-muted">— here’s what can grow.</span></h1></div>
+        <div class="topbar-actions"><button class="search-trigger" id="searchBtn"><span>⌕</span><span class="search-copy">Quick actions</span><kbd>⌘ K</kbd></button><button class="btn btn-ghost" id="demoBtn">Demo data</button><button class="btn btn-primary" id="saveBtn"><span>Save</span><span class="btn-arrow">↗</span></button></div>
+      </header>
+
+      <section class="page active" id="dashboard">
+        <div class="hero-grid">
+          <article class="hero-card glass-card">
+            <div class="hero-top"><span class="status-pill"><i></i> Growth opportunity</span><button class="icon-btn">↗</button></div>
+            <div class="hero-copy"><div class="hero-kicker">Potential monthly impact</div><div class="hero-number" id="impactValue">£3.4k</div><div class="hero-delta"><span>↑ 18%</span> if the top 3 actions are implemented</div></div>
+            <div class="hero-footer"><div class="avatar-stack"><span>01</span><span>02</span><span>03</span></div><p><strong>3 high-impact moves</strong> identified for <span id="heroBusiness">your client</span>.</p><button class="text-btn" data-jump="plan">View plan →</button></div>
+          </article>
+          <article class="score-card glass-card">
+            <div class="card-head"><div><span class="overline">GROWTH SCORE</span><h3>Business health</h3></div><span class="trend-up">+6 pts</span></div>
+            <div class="score-layout"><div class="score-ring"><svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="50"></circle><circle class="ring-progress" id="scoreRing" cx="60" cy="60" r="50"></circle></svg><div><strong id="growthScore">78</strong><span>/100</span></div></div><div class="score-breakdown"><div><span>Visibility</span><b>82</b></div><div><span>Conversion</span><b>68</b></div><div><span>Retention</span><b>74</b></div><div><span>Reputation</span><b>88</b></div></div></div>
+          </article>
+        </div>
+
+        <div class="metric-row">
+          <article class="metric-card"><div class="metric-icon">↗</div><span>Revenue opportunity</span><strong id="revenueOpportunity">£3,420</strong><small><b>+14.2%</b> estimated uplift</small></article>
+          <article class="metric-card"><div class="metric-icon">◎</div><span>Repeat customer target</span><strong id="repeatTarget">+22%</strong><small>Within 90 days</small></article>
+          <article class="metric-card"><div class="metric-icon">✦</div><span>Content ready</span><strong>30</strong><small>Ideas across 4 themes</small></article>
+          <article class="metric-card"><div class="metric-icon">◇</div><span>Campaign value</span><strong id="campaignValue">£780</strong><small>Projected monthly upside</small></article>
+        </div>
+
+        <div class="dashboard-lower">
+          <article class="glass-card action-card"><div class="card-head"><div><span class="overline">NEXT BEST ACTIONS</span><h3>Your highest-leverage moves</h3></div><button class="text-btn" data-jump="plan">Full plan →</button></div><div id="priorityList" class="priority-list"></div></article>
+          <article class="glass-card momentum-card"><div class="card-head"><div><span class="overline">90-DAY MOMENTUM</span><h3>Projected growth</h3></div><span class="legend"><i></i> Opportunity</span></div><div class="chart-wrap"><div class="chart-labels"><span>£4k</span><span>£3k</span><span>£2k</span><span>£1k</span></div><svg class="line-chart" viewBox="0 0 600 210" preserveAspectRatio="none"><defs><linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#95f6c8" stop-opacity=".25"/><stop offset="100%" stop-color="#95f6c8" stop-opacity="0"/></linearGradient></defs><path class="chart-grid" d="M0 30H600 M0 80H600 M0 130H600 M0 180H600"/><path class="chart-area" d="M0 178 C80 174 98 152 150 150 C210 148 230 120 300 116 C360 112 390 82 450 77 C500 72 548 42 600 34 L600 210 L0 210 Z"/><path class="chart-line" d="M0 178 C80 174 98 152 150 150 C210 148 230 120 300 116 C360 112 390 82 450 77 C500 72 548 42 600 34"/><circle class="chart-dot" cx="600" cy="34" r="5"/></svg><div class="chart-x"><span>Now</span><span>Month 1</span><span>Month 2</span><span>Month 3</span></div></div><div class="chart-insight"><span class="spark">✦</span><p><strong>Best lever:</strong> repeat-customer campaigns could drive the fastest improvement.</p></div></article>
+        </div>
+      </section>
+
+      <section class="page" id="plan">
+        <div class="page-intro"><div><span class="status-pill"><i></i> Personalised to client</span><h2>30 days. One clear growth rhythm.</h2><p>A focused execution plan built around visibility, conversion and repeat business.</p></div><div class="segmented"><button class="active">Calendar</button><button>Focus</button></div></div>
+        <div class="plan-toolbar glass-card"><div class="plan-progress"><span>Monthly completion</span><div class="progress-line"><i id="planProgress"></i></div><b id="planPercent">0%</b></div><div><button class="btn btn-ghost" id="resetPlanBtn">Reset</button><button class="btn btn-primary" id="generatePlanBtn">Regenerate plan ↗</button></div></div>
+        <div id="planGrid" class="plan-grid"></div>
+      </section>
+
+      <section class="page" id="content">
+        <div class="page-intro compact"><div><span class="overline">CONTENT STUDIO</span><h2>Create content that has a job to do.</h2><p>Generate conversion-led ideas matched to the client, platform and commercial goal.</p></div></div>
+        <div class="studio-grid"><article class="glass-card form-card"><div class="card-head"><div><span class="overline">BRIEF</span><h3>What are we creating?</h3></div><span class="ai-pill">✦ Smart brief</span></div><label>Platform<div class="choice-row" id="platformChoices"><button class="choice active" data-value="Instagram">Instagram</button><button class="choice" data-value="TikTok">TikTok</button><button class="choice" data-value="Facebook">Facebook</button><button class="choice" data-value="LinkedIn">LinkedIn</button></div><select id="platform" class="hidden-select"><option>Instagram</option><option>TikTok</option><option>Facebook</option><option>LinkedIn</option></select></label><label>Commercial goal<select id="contentGoal"><option>Get more customers</option><option>Promote an offer</option><option>Build trust</option><option>Increase repeat visits</option><option>Get more reviews</option></select></label><label>Topic or angle<textarea id="contentTopic" rows="5" placeholder="e.g. turn a quiet Tuesday into a reason to visit...">Behind the scenes + why regulars keep coming back</textarea></label><button class="btn btn-primary full" id="generateContentBtn">✦ Generate content</button><div class="form-note"><span>⌁</span> Uses the saved business profile and target customer.</div></article><article class="glass-card output-card"><div class="card-head"><div><span class="overline">READY TO USE</span><h3>Content concepts</h3></div><button class="icon-btn" id="clearContent">↻</button></div><div id="contentOutput" class="stack empty-state"><div class="empty-orb">✦</div><h4>Your content will appear here</h4><p>Give GrowLocal a brief and it will turn it into commercially useful content concepts.</p></div></article></div>
+      </section>
+
+      <section class="page" id="offers">
+        <div class="page-intro compact"><div><span class="overline">CAMPAIGN LAB</span><h2>Design offers without training customers to wait for discounts.</h2><p>Build measurable campaigns around the number the business actually needs to move.</p></div></div>
+        <div class="studio-grid"><article class="glass-card form-card"><div class="card-head"><div><span class="overline">CAMPAIGN INPUTS</span><h3>Build the commercial mechanic</h3></div><span class="ai-pill">◇ Margin aware</span></div><label>Objective<select id="offerGoal"><option>Bring in new customers</option><option>Increase quiet-day sales</option><option>Increase average spend</option><option>Bring customers back</option></select></label><div class="field-pair"><label>Average spend (£)<input type="number" id="avgSpend" value="18" min="1" /></label><label>Quietest day<select id="quietDay"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select></label></div><label>Campaign intensity<input id="intensity" type="range" min="1" max="3" value="2"><div class="range-labels"><span>Safe</span><span>Balanced</span><span>Aggressive</span></div></label><button class="btn btn-primary full" id="generateOfferBtn">Build campaign ↗</button></article><article class="glass-card output-card"><div class="card-head"><div><span class="overline">RECOMMENDATION</span><h3>Campaign blueprint</h3></div></div><div id="offerOutput" class="empty-state"><div class="empty-orb">◇</div><h4>No campaign yet</h4><p>Choose the goal and commercial inputs to generate a measurable offer.</p></div></article></div>
+      </section>
+
+      <section class="page" id="reviews">
+        <div class="page-intro compact"><div><span class="overline">REPUTATION</span><h2>Turn every review into a public proof point.</h2><p>Respond consistently while keeping the tone human and on-brand.</p></div></div>
+        <div class="studio-grid"><article class="glass-card form-card"><div class="card-head"><div><span class="overline">REVIEW</span><h3>Paste customer feedback</h3></div><span class="sentiment-pill" id="sentimentPill">Auto sentiment</span></div><label>Customer review<textarea id="reviewText" rows="8" placeholder="Paste the customer review here..."></textarea></label><label>Brand tone<select id="reviewTone"><option>Warm and professional</option><option>Friendly</option><option>Premium</option><option>Short and direct</option></select></label><button class="btn btn-primary full" id="generateReplyBtn">✦ Write response</button></article><article class="glass-card output-card"><div class="card-head"><div><span class="overline">SUGGESTED RESPONSE</span><h3>On-brand reply</h3></div><button class="btn btn-mini" id="copyReview">Copy</button></div><div id="reviewOutput" class="review-output muted">Your response will appear here.</div><div class="response-tips"><span>✓ Acknowledge</span><span>✓ Personal</span><span>✓ Action-led</span></div></article></div>
+      </section>
+
+      <section class="page" id="insights">
+        <div class="page-intro compact"><div><span class="overline">INSIGHTS</span><h2>Simple numbers. Better decisions.</h2><p>No vanity metrics — just the commercial signals that tell you what to do next.</p></div><button class="btn btn-primary" id="simulateBtn">Simulate next month ↗</button></div>
+        <div class="metric-row insight-metrics"><article class="metric-card"><span>Monthly customers</span><strong id="customersMetric">420</strong><small><b>+8.4%</b> vs last month</small></article><article class="metric-card"><span>Avg. customer value</span><strong id="aovMetric">£18.40</strong><small><b>+£1.20</b> vs last month</small></article><article class="metric-card"><span>Repeat rate</span><strong id="repeatMetric">31%</strong><small><b>+4.1 pts</b> vs last month</small></article><article class="metric-card"><span>Review velocity</span><strong id="reviewsMetric">18</strong><small>New reviews / month</small></article></div>
+        <div class="dashboard-lower"><article class="glass-card action-card"><div class="card-head"><div><span class="overline">FUNNEL</span><h3>Where growth is leaking</h3></div></div><div class="funnel"><div><span>Reach</span><b>12,840</b><i style="--w:100%"></i></div><div><span>Engaged</span><b>3,210</b><i style="--w:70%"></i></div><div><span>Intent</span><b>1,020</b><i style="--w:48%"></i></div><div><span>Customers</span><b>420</b><i style="--w:28%"></i></div><div><span>Repeat</span><b>130</b><i style="--w:17%"></i></div></div></article><article class="glass-card action-card"><div class="card-head"><div><span class="overline">GROWTH DIAGNOSIS</span><h3>What the numbers say</h3></div></div><div id="insightList" class="insight-list"><div class="insight-row"><span class="insight-icon">01</span><div><strong>Retention is the cheapest win.</strong><p>Improving repeat rate from 31% to 38% is worth more than chasing the same number of new customers.</p></div></div><div class="insight-row"><span class="insight-icon">02</span><div><strong>The offer should lift spend, not erode it.</strong><p>Bundle mechanics are likely to outperform broad percentage discounts at the current AOV.</p></div></div><div class="insight-row"><span class="insight-icon">03</span><div><strong>Reviews can compound local discovery.</strong><p>A steady weekly review rhythm gives the business stronger proof at the point of consideration.</p></div></div></div></article></div>
+      </section>
+
+
+      <section class="page" id="leads">
+        <div class="page-intro compact"><div><span class="overline">SALES PIPELINE</span><h2>Turn conversations into recurring clients.</h2><p>Track local businesses from first contact to paid without needing a separate CRM.</p></div><button class="btn btn-primary" id="addLeadBtn">+ Add lead</button></div>
+        <div class="metric-row insight-metrics"><article class="metric-card"><span>Open opportunities</span><strong id="openLeadsMetric">0</strong><small>Active prospects</small></article><article class="metric-card"><span>Pipeline value</span><strong id="pipelineValueMetric">£0</strong><small>Monthly recurring potential</small></article><article class="metric-card"><span>Proposal stage</span><strong id="proposalMetric">0</strong><small>Ready to close</small></article><article class="metric-card"><span>Won clients</span><strong id="wonMetric">0</strong><small>Converted prospects</small></article></div>
+        <article class="glass-card pipeline-card"><div class="card-head"><div><span class="overline">OPPORTUNITIES</span><h3>Your local prospect list</h3></div><span class="ai-pill">Saved locally</span></div><div id="leadList" class="lead-list"></div></article>
+        <div class="lead-modal" id="leadModal"><div class="lead-modal-card glass-card"><div class="card-head"><div><span class="overline">NEW OPPORTUNITY</span><h3>Add a business lead</h3></div><button class="icon-btn" id="closeLeadModal">×</button></div><div class="form-grid"><label>Business name<input id="leadName" placeholder="e.g. Local café" /></label><label>Contact name<input id="leadContact" placeholder="Owner / manager" /></label><label>Stage<select id="leadStage"><option>Prospect</option><option>Contacted</option><option>Meeting</option><option>Proposal</option><option>Won</option></select></label><label>Monthly value (£)<input id="leadValue" type="number" value="149" min="0" /></label><label class="wide">Next action<input id="leadNext" placeholder="e.g. Follow up Friday with audit" /></label></div><button class="btn btn-primary full" id="saveLeadBtn">Save opportunity ↗</button></div></div>
+      </section>
+
+      <section class="page" id="reports">
+        <div class="page-intro compact"><div><span class="overline">CLIENT REPORTING</span><h2>Make the value visible every month.</h2><p>Turn activity into a clean client-facing summary that shows progress, priorities and next actions.</p></div><button class="btn btn-primary" id="printReportBtn">Export report ↗</button></div>
+        <div class="report-shell glass-card" id="clientReport">
+          <div class="report-cover"><div><div class="report-brand"><span class="brand-mark mini"><span></span><span></span><span></span></span><strong>GrowLocal</strong></div><span class="overline">MONTHLY GROWTH REPORT</span><h2 id="reportBusiness">Your Demo Client</h2><p id="reportLocation">Northampton · Local business</p></div><div class="report-period"><span>This month</span><strong id="reportMonth">September 2026</strong></div></div>
+          <div class="report-score-row"><div class="report-score"><span>Growth score</span><strong id="reportScore">78</strong><small>/ 100</small></div><div class="report-stat"><span>Potential uplift</span><strong id="reportUplift">£3,420</strong><small>estimated opportunity</small></div><div class="report-stat"><span>Plan completed</span><strong id="reportCompletion">0%</strong><small>of this month's actions</small></div><div class="report-stat"><span>Primary focus</span><strong id="reportFocus">Retention</strong><small>highest leverage area</small></div></div>
+          <div class="report-grid"><article><span class="overline">WHAT MOVED</span><h3>Progress this month</h3><div class="report-points"><p><b>01</b> A clear monthly growth rhythm is now in place.</p><p><b>02</b> Content is being tied to commercial outcomes instead of posting volume.</p><p><b>03</b> Retention and repeat visits remain the fastest path to efficient growth.</p></div></article><article><span class="overline">NEXT 30 DAYS</span><h3>Recommended priorities</h3><div class="report-points"><p><b>01</b> Launch one measurable hero campaign.</p><p><b>02</b> Build a 14-day return-visit loop.</p><p><b>03</b> Turn reviews and customer proof into weekly content.</p></div></article></div>
+          <div class="report-footer"><div><span class="overline">CLIENT NOTE</span><p id="reportNote">The goal is not more marketing activity. It is a smaller number of actions that can be linked to customers, spend and repeat visits.</p></div><span>Prepared in GrowLocal OS</span></div>
+        </div>
+      </section>
+
+
+      <section class="page" id="agency">
+        <div class="page-intro compact"><div><span class="overline">AGENCY HQ</span><h2>See the business behind the businesses.</h2><p>Track recurring revenue, client capacity, pipeline health and the next actions most likely to move GrowLocal forward.</p></div><div class="agency-actions"><button class="btn btn-ghost" id="exportBackupBtn">Export backup</button><label class="btn btn-ghost file-btn">Import backup<input id="importBackupInput" type="file" accept="application/json" hidden></label></div></div>
+        <div class="metric-row agency-metrics"><article class="metric-card"><div class="metric-icon">£</div><span>Estimated MRR</span><strong id="agencyMrr">£0</strong><small>Won pipeline + retained clients</small></article><article class="metric-card"><div class="metric-icon">◎</div><span>Client workspaces</span><strong id="agencyClients">0</strong><small>Current local portfolio</small></article><article class="metric-card"><div class="metric-icon">↗</div><span>Pipeline coverage</span><strong id="agencyPipeline">£0</strong><small>Open monthly opportunity</small></article><article class="metric-card"><div class="metric-icon">◉</div><span>Close rate</span><strong id="agencyCloseRate">0%</strong><small>Won vs progressed leads</small></article></div>
+        <div class="agency-grid"><article class="glass-card"><div class="card-head"><div><span class="overline">PORTFOLIO</span><h3>Client health at a glance</h3></div><span class="ai-pill">Live locally</span></div><div id="agencyPortfolio" class="agency-portfolio"></div></article><article class="glass-card"><div class="card-head"><div><span class="overline">FOCUS</span><h3>Recommended next moves</h3></div></div><div id="agencyFocus" class="agency-focus"></div></article></div>
+      </section>
+      <section class="page" id="clients">
+        <div class="page-intro compact"><div><span class="overline">CLIENT WORKSPACES</span><h2>Run every client from one operating system.</h2><p>Switch businesses instantly, keep their plans separate and preserve the context behind every recommendation.</p></div><div class="agency-actions"><button class="btn btn-ghost" id="duplicateClientBtn">Duplicate</button><button class="btn btn-ghost danger-btn" id="deleteClientBtn">Delete</button><button class="btn btn-primary" id="newClientBtn">+ New client</button></div></div>
+        <div class="client-workspace-grid"><article class="glass-card client-switch-card"><div class="card-head"><div><span class="overline">WORKSPACES</span><h3>Your clients</h3></div><span class="ai-pill">Local-first</span></div><div id="clientWorkspaceList" class="client-workspace-list"></div></article><article class="glass-card profile-form"><div class="section-title"><span class="step-num">01</span><div><h3>Business basics</h3><p>The essentials GrowLocal uses in every recommendation.</p></div></div><div class="form-grid"><label>Business name<input id="businessName" placeholder="e.g. Nourish Northampton" /></label><label>Business type<input id="businessType" placeholder="e.g. Café, gym, salon, trades" /></label><label>Town / city<input id="businessLocation" placeholder="e.g. Northampton" /></label><label>Ideal customer<input id="idealCustomer" placeholder="e.g. 18–35 local professionals" /></label><label>Primary goal<select id="primaryGoal"><option>More customers</option><option>More repeat visits</option><option>Higher average spend</option><option>More leads</option><option>More bookings</option></select></label><label>Monthly marketing budget (£)<input id="marketingBudget" type="number" value="500" min="0" /></label></div><div class="section-divider"></div><div class="section-title"><span class="step-num">02</span><div><h3>Positioning</h3><p>The detail that stops recommendations feeling generic.</p></div></div><div class="form-grid"><label class="wide">What makes the business different?<textarea id="usp" rows="4" placeholder="Products, atmosphere, service, expertise, story, location..."></textarea></label><label class="wide">Current growth blockers<textarea id="problems" rows="4" placeholder="Quiet weekdays, inconsistent posting, weak offers, low repeat rate..."></textarea></label></div><div class="form-actions"><span class="saved-copy" id="savedCopy">Changes save locally on this device.</span><button class="btn btn-primary" id="analyseBtn">Analyse business ↗</button></div></article></div>
+      </section>
+
+
+      <section class="page" id="account">
+        <div class="page-intro compact"><div><span class="overline">ACCOUNT & BILLING</span><h2>A production-ready commercial shell.</h2><p>Everything needed to connect GrowLocal to authentication, cloud data, AI and payments later — without pretending those services are live today.</p></div><span class="status-pill"><i></i> Demo environment</span></div>
+        <div class="account-grid">
+          <article class="glass-card account-card"><div class="card-head"><div><span class="overline">CURRENT PLAN</span><h3>Growth Partner</h3></div><span class="plan-chip">£149 / mo</span></div><div class="account-price">£149<span>/month</span></div><p>Your recommended core offer: recurring planning, campaigns, content and reporting.</p><div class="feature-status"><div><span>Client workspaces</span><b>Active</b></div><div><span>Monthly reports</span><b>Active</b></div><div><span>Lead CRM</span><b>Active</b></div><div><span>Cloud sync</span><em>Ready to connect</em></div></div><button class="btn btn-ghost full" id="billingDemoBtn">Preview billing flow</button></article>
+          <article class="glass-card account-card"><div class="card-head"><div><span class="overline">INTEGRATIONS</span><h3>Production connections</h3></div><span class="ai-pill">API ready</span></div><div class="integration-list"><div><span class="integration-icon">✦</span><div><strong>AI generation</strong><small>OpenAI / model API</small></div><b>Not connected</b></div><div><span class="integration-icon">£</span><div><strong>Payments</strong><small>Stripe subscriptions</small></div><b>Not connected</b></div><div><span class="integration-icon">◎</span><div><strong>Authentication</strong><small>Client & agency login</small></div><b>Not connected</b></div><div><span class="integration-icon">↗</span><div><strong>Analytics</strong><small>GA / social / CRM data</small></div><b>Not connected</b></div></div><p class="integration-note">These require your live provider accounts and credentials. The product is structured so they can be connected without redesigning the client experience.</p></article>
+          <article class="glass-card account-card activity-card"><div class="card-head"><div><span class="overline">ACTIVITY</span><h3>Recent workspace history</h3></div><button class="btn btn-mini" id="clearActivityBtn">Clear</button></div><div id="activityFeed" class="activity-feed"></div></article>
+        </div>
+      </section>
+
+      <section class="page" id="sales">
+        <div class="page-intro compact"><div><span class="overline">YOUR COMMERCIAL MODEL</span><h2>Sell the outcome, not the dashboard.</h2><p>Use GrowLocal as the delivery system behind a simple recurring growth service.</p></div></div>
+        <div class="pricing-grid"><article class="pricing-card glass-card"><span class="overline">ENTRY</span><h3>Growth Setup</h3><div class="price">£199<span>one-off</span></div><p>Get the owner from scattered marketing to one clear growth plan.</p><ul><li>Business growth audit</li><li>90-day commercial priorities</li><li>First 30-day action plan</li><li>Campaign + content setup</li></ul><button class="btn btn-ghost full">Use as entry offer</button></article><article class="pricing-card featured glass-card"><div class="popular">BEST VALUE</div><span class="overline">RECURRING</span><h3>Growth Partner</h3><div class="price">£149<span>/month</span></div><p>Monthly planning, campaigns and content — without hiring a marketer.</p><ul><li>Monthly growth scorecard</li><li>12 conversion-led content pieces</li><li>1 campaign built + reviewed</li><li>Reputation response support</li><li>Monthly optimisation call</li></ul><button class="btn btn-primary full" id="copyPitchBtn">Copy sales pitch ↗</button></article><article class="pricing-card glass-card"><span class="overline">PREMIUM</span><h3>Done-With-You</h3><div class="price">£349<span>/month</span></div><p>For owners who want you closer to execution and decision-making.</p><ul><li>Everything in Growth Partner</li><li>Weekly check-in</li><li>Campaign iteration</li><li>Content calendar management</li><li>Priority support</li></ul><button class="btn btn-ghost full">Premium anchor</button></article></div><article class="glass-card pitch-card"><div><span class="overline">30-SECOND PITCH</span><h3>Lead with the gap between activity and revenue.</h3></div><div class="pitch-copy" id="pitchCopy">“I help local businesses turn the marketing they already do into a simple monthly growth system. Instead of random posts and discounts, we focus on the few actions most likely to increase customers, repeat visits and average spend — then track whether they actually work. I set the system up for £199, then run the monthly growth plan from £149.”</div><button class="btn btn-mini" id="copyPitchInline">Copy</button></article><div id="copyStatus" class="copy-status"></div>
+      <article class="glass-card proposal-builder"><div class="card-head"><div><span class="overline">PERSONALISED PROPOSAL</span><h3>Turn the active client into a ready-to-send offer.</h3></div><button class="btn btn-mini" id="copyProposalBtn">Copy proposal</button></div><div id="proposalPreview" class="proposal-preview"></div></article>
+      </section>
+    </main>
+  </div>
+
+  <div class="command-backdrop" id="commandBackdrop"><div class="command-palette"><div class="command-search"><span>⌕</span><input id="commandInput" placeholder="Jump to anything…" autocomplete="off"><kbd>ESC</kbd></div><div class="command-label">QUICK ACTIONS</div><button data-command-page="dashboard"><span>⌂</span><div><strong>Open overview</strong><small>See the highest impact actions</small></div><kbd>1</kbd></button><button data-command-page="content"><span>✦</span><div><strong>Create content</strong><small>Generate conversion-led concepts</small></div><kbd>2</kbd></button><button data-command-page="offers"><span>◇</span><div><strong>Build a campaign</strong><small>Create a measurable offer</small></div><kbd>3</kbd></button><button data-command-page="leads"><span>◉</span><div><strong>Open lead pipeline</strong><small>Track prospects and proposals</small></div><kbd>4</kbd></button><button data-command-page="reports"><span>▤</span><div><strong>Open client report</strong><small>Show progress and next priorities</small></div><kbd>5</kbd></button><button data-command-page="agency"><span>◈</span><div><strong>Open Agency HQ</strong><small>See MRR, pipeline and portfolio health</small></div><kbd>6</kbd></button><button data-command-page="clients"><span>◎</span><div><strong>Edit client profile</strong><small>Update business context</small></div><kbd>7</kbd></button><button data-command-page="account"><span>◌</span><div><strong>Account & billing</strong><small>See production connection status</small></div><kbd>8</kbd></button></div></div>
+  <div class="lead-modal" id="workspaceModal"><div class="lead-modal-card glass-card"><div class="card-head"><div><span class="overline">SWITCH WORKSPACE</span><h3>Choose a client</h3></div><button class="icon-btn" id="closeWorkspaceModal">×</button></div><div id="workspaceModalList" class="workspace-modal-list"></div><button class="btn btn-primary full" id="modalNewClientBtn">+ Create new client</button></div></div>
+  <div id="toastRoot"></div>
+  <script src="app.js"></script>
+
+<!-- GrowLocal OS V7: Demo & Launch Toolkit -->
+<style>
+.v7-fab{position:fixed;right:22px;bottom:22px;z-index:80;border:0;border-radius:999px;padding:12px 16px;background:linear-gradient(135deg,#6366f1,#22d3ee);color:white;font-weight:800;box-shadow:0 14px 38px rgba(15,23,42,.35);cursor:pointer}
+.v7-panel{position:fixed;right:22px;bottom:78px;width:min(390px,calc(100vw - 28px));max-height:72vh;overflow:auto;background:rgba(10,15,30,.97);border:1px solid rgba(148,163,184,.18);border-radius:20px;padding:18px;z-index:79;box-shadow:0 22px 70px rgba(0,0,0,.42);display:none;color:#e5e7eb;backdrop-filter:blur(18px)}
+.v7-panel.open{display:block}.v7-title{font-size:17px;font-weight:850;margin:0 0 4px}.v7-muted{font-size:12px;color:#94a3b8}
+.v7-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}.v7-action{border:1px solid rgba(148,163,184,.16);background:rgba(255,255,255,.045);color:#e5e7eb;border-radius:13px;padding:11px;text-align:left;cursor:pointer;font-weight:700}
+.v7-action:hover{background:rgba(99,102,241,.13);border-color:rgba(99,102,241,.4)}
+.v7-check{display:flex;gap:9px;align-items:flex-start;padding:9px 0;border-bottom:1px solid rgba(148,163,184,.1);font-size:13px}
+.v7-check input{margin-top:3px}.v7-progress{height:7px;background:rgba(148,163,184,.13);border-radius:20px;overflow:hidden;margin:12px 0}
+.v7-progress>i{display:block;height:100%;background:linear-gradient(90deg,#6366f1,#22d3ee);width:0}
+.v7-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);opacity:0;z-index:99;background:#0f172a;color:#fff;border:1px solid rgba(148,163,184,.2);padding:10px 14px;border-radius:12px;transition:.2s;pointer-events:none}
+.v7-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.v7-kpi-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+.v7-kpi{border:1px solid rgba(148,163,184,.14);background:rgba(255,255,255,.035);border-radius:14px;padding:10px}
+.v7-kpi b{display:block;font-size:15px}.v7-kpi span{font-size:10px;color:#94a3b8}
+@media(max-width:640px){.v7-fab{right:14px;bottom:14px}.v7-panel{right:14px;bottom:66px}.v7-kpi-strip{grid-template-columns:1fr 1fr}}
+</style>
+<button class="v7-fab" id="v7Fab" aria-label="Open launch toolkit">Launch Toolkit</button>
+<aside class="v7-panel" id="v7Panel" aria-label="GrowLocal launch toolkit">
+  <div class="v7-title">Launch Toolkit</div>
+  <div class="v7-muted">Demo faster, protect your data, and know what is ready to sell.</div>
+
+  <div class="v7-kpi-strip">
+    <div class="v7-kpi"><b id="v7Clients">0</b><span>Clients</span></div>
+    <div class="v7-kpi"><b id="v7Leads">0</b><span>Leads</span></div>
+    <div class="v7-kpi"><b id="v7MRR">£0</b><span>Est. MRR</span></div>
+    <div class="v7-kpi"><b id="v7Ready">0%</b><span>Launch ready</span></div>
+  </div>
+
+  <div class="v7-grid">
+    <button class="v7-action" id="v7Demo">⚡ Load polished demo</button>
+    <button class="v7-action" id="v7Backup">⬇ Export backup</button>
+    <button class="v7-action" id="v7Print">🧾 Print current view</button>
+    <button class="v7-action" id="v7CopyPitch">📋 Copy 30-sec pitch</button>
+  </div>
+
+  <div style="margin-top:16px;font-weight:800;font-size:13px">Launch readiness</div>
+  <div class="v7-progress"><i id="v7Progress"></i></div>
+  <label class="v7-check"><input type="checkbox" data-v7check="profile"> Client profile completed</label>
+  <label class="v7-check"><input type="checkbox" data-v7check="plan"> 30-day plan generated</label>
+  <label class="v7-check"><input type="checkbox" data-v7check="content"> Sample content generated</label>
+  <label class="v7-check"><input type="checkbox" data-v7check="proposal"> Proposal prepared</label>
+  <label class="v7-check"><input type="checkbox" data-v7check="backup"> Workspace backed up</label>
+
+  <div style="margin-top:14px;padding:12px;border-radius:14px;background:rgba(34,211,238,.07);border:1px solid rgba(34,211,238,.15);font-size:12px;line-height:1.45">
+    <b>Next production unlocks:</b><br>Authentication, cloud database, Stripe, real AI generation, analytics/social integrations.
+  </div>
+</aside>
+<div class="v7-toast" id="v7Toast"></div>
+
+<script>
+(function(){
+  const fab=document.getElementById('v7Fab'), panel=document.getElementById('v7Panel'), toast=document.getElementById('v7Toast');
+  if(!fab||!panel) return;
+  const showToast=(m)=>{toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1800)}
+  fab.addEventListener('click',()=>panel.classList.toggle('open'));
+
+  const safeParse=(k,f)=>{try{return JSON.parse(localStorage.getItem(k))||f}catch(e){return f}}
+  const allKeys=()=>Object.keys(localStorage);
+
+  function getClients(){
+    let best=[];
+    for(const k of allKeys()){
+      if(/client|workspace/i.test(k)){
+        const v=safeParse(k,null);
+        if(Array.isArray(v) && v.length>best.length) best=v;
+      }
+    }
+    return best;
+  }
+  function getLeads(){
+    let best=[];
+    for(const k of allKeys()){
+      if(/lead|pipeline/i.test(k)){
+        const v=safeParse(k,null);
+        if(Array.isArray(v) && v.length>best.length) best=v;
+      }
+    }
+    return best;
+  }
+  function refresh(){
+    const clients=getClients(), leads=getLeads();
+    document.getElementById('v7Clients').textContent=clients.length;
+    document.getElementById('v7Leads').textContent=leads.length;
+    let mrr=0;
+    [...clients,...leads].forEach(x=>{
+      const raw=x?.mrr ?? x?.monthlyValue ?? x?.value ?? x?.monthly ?? 0;
+      const n=Number(String(raw).replace(/[^\d.]/g,'')); if(Number.isFinite(n)) mrr+=n;
+    });
+    document.getElementById('v7MRR').textContent='£'+Math.round(mrr).toLocaleString();
+    const checks=[...document.querySelectorAll('[data-v7check]')];
+    const saved=safeParse('growlocal_v7_launch_checks',{});
+    checks.forEach(c=>c.checked=!!saved[c.dataset.v7check]);
+    const pct=Math.round((checks.filter(c=>c.checked).length/checks.length)*100)||0;
+    document.getElementById('v7Ready').textContent=pct+'%';
+    document.getElementById('v7Progress').style.width=pct+'%';
+  }
+  document.querySelectorAll('[data-v7check]').forEach(c=>c.addEventListener('change',()=>{
+    const saved={};document.querySelectorAll('[data-v7check]').forEach(x=>saved[x.dataset.v7check]=x.checked);
+    localStorage.setItem('growlocal_v7_launch_checks',JSON.stringify(saved));refresh();
+  }));
+
+  document.getElementById('v7Backup').addEventListener('click',()=>{
+    const dump={version:'GrowLocal OS V7',exportedAt:new Date().toISOString(),localStorage:{}};
+    allKeys().forEach(k=>dump.localStorage[k]=localStorage.getItem(k));
+    const blob=new Blob([JSON.stringify(dump,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='growlocal-workspace-backup.json';a.click();
+    URL.revokeObjectURL(a.href);
+    const saved=safeParse('growlocal_v7_launch_checks',{});saved.backup=true;localStorage.setItem('growlocal_v7_launch_checks',JSON.stringify(saved));
+    refresh();showToast('Workspace backup exported');
+  });
+
+  document.getElementById('v7Print').addEventListener('click',()=>window.print());
+
+  document.getElementById('v7CopyPitch').addEventListener('click',async()=>{
+    const pitch="GrowLocal helps local businesses turn marketing into a simple growth system. We identify the biggest revenue opportunities, build a 30-day action plan, create campaign ideas and content, track progress, and package the results into clear monthly reporting — all from one workspace.";
+    try{await navigator.clipboard.writeText(pitch);showToast('30-second pitch copied')}catch(e){showToast('Copy blocked by browser')}
+  });
+
+  document.getElementById('v7Demo').addEventListener('click',()=>{
+    const demo={
+      id:'demo-northstar',
+      name:'Northstar Coffee House',
+      business:'Northstar Coffee House',
+      industry:'Cafe & Hospitality',
+      location:'Northampton',
+      goal:'Increase weekday footfall and repeat visits',
+      monthlyRevenue:18500,
+      averageOrder:9.4,
+      growthScore:68,
+      status:'Active'
+    };
+    let wrote=false;
+    for(const k of allKeys()){
+      if(/client|workspace/i.test(k)){
+        const v=safeParse(k,null);
+        if(Array.isArray(v)){v.unshift(demo);localStorage.setItem(k,JSON.stringify(v.slice(0,50)));wrote=true;break}
+      }
+    }
+    if(!wrote) localStorage.setItem('growlocal_clients',JSON.stringify([demo]));
+    const saved=safeParse('growlocal_v7_launch_checks',{});saved.profile=true;saved.plan=true;saved.content=true;localStorage.setItem('growlocal_v7_launch_checks',JSON.stringify(saved));
+    refresh();showToast('Polished demo workspace loaded');
+    setTimeout(()=>location.reload(),700);
+  });
+
+  window.addEventListener('storage',refresh);
+  refresh();
+})();
+</script>
+
+</body>
+</html>
