@@ -1,9 +1,13 @@
 {
   "name": "growlocal-os",
-  "version": "8.0.0",
+  "version": "9.2.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "wrangler dev",
+    "check": "node --check src/index.js && node --check public/audit.js && node --test",
+    "types": "wrangler types",
+    "deploy:dry": "wrangler deploy --dry-run",
     "deploy": "wrangler deploy"
   },
   "devDependencies": {
