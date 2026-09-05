@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Lead Operations — GrowLocal</title>
+  <link rel="icon" href="/favicon.svg" />
+  <link rel="stylesheet" href="/admin/admin.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="/app/"><span class="mark">▥</span><span>GrowLocal</span></a>
+      <div class="top-actions"><span class="badge">V10 · Lead Operations</span><button id="lockBtn" class="ghost" hidden>Lock</button></div>
+    </header>
+
+    <section id="loginPanel" class="login-card">
+      <p class="eyebrow">PROTECTED OPERATIONS</p>
+      <h1>Lead inbox.</h1>
+      <p>Enter the private admin token configured in Cloudflare. It stays in this browser session and is never added to the page URL.</p>
+      <form id="loginForm">
+        <label>Admin token<input id="tokenInput" type="password" autocomplete="current-password" required /></label>
+        <button class="primary" type="submit">Open lead inbox</button>
+        <p id="loginMessage" class="message" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="appPanel" hidden>
+      <div class="hero-row">
+        <div><p class="eyebrow">AGENCY HQ / LIVE LEADS</p><h1>Lead operations.</h1><p class="sub">Prioritise, qualify and prepare the next action from one secure inbox.</p></div>
+        <button id="refreshBtn" class="ghost">Refresh</button>
+      </div>
+
+      <div class="stats" id="stats"></div>
+
+      <div class="toolbar">
+        <input id="searchInput" type="search" placeholder="Search business, contact, email or location" />
+        <select id="statusFilter"><option value="">All statuses</option><option>new</option><option>contacted</option><option>qualified</option><option>closed</option><option>archived</option></select>
+      </div>
+
+      <div id="errorBox" class="error" hidden></div>
+      <div class="layout">
+        <div id="leadList" class="lead-list"></div>
+        <aside id="detailPanel" class="detail empty"><p>Select a lead to review the enquiry and plan the next move.</p></aside>
+      </div>
+    </section>
+  </main>
+  <script src="/admin/admin.js" defer></script>
+</body>
+</html>
