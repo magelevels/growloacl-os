@@ -1,3 +1,5 @@
+> **V11 Sales & Conversion:** see [README-V11.md](README-V11.md) for the required additive D1 migration, manual deployment steps, API fields and release notes. Apply the V11 migration before deploying this code.
+
 # GrowLocal OS V9.2 — real lead capture
 
 V9 evolves the static Cloudflare Worker into a Worker + Static Assets application. The marketing site now submits genuine free-growth-audit requests to `POST /api/audit-request`, backed by Cloudflare D1. The `/app/` demo remains unchanged and continues to use local browser storage.
