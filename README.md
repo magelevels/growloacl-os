@@ -58,4 +58,4 @@ pnpm run check
 pnpm run deploy:dry
 ```
 
-`pnpm run check` runs JavaScript syntax checks and 24 validation/API regression tests. The dry run validates the Worker bundle and static-assets configuration without changing the live deployment.
+`pnpm run check` runs JavaScript syntax checks and 25 validation/API regression tests. The dry run validates the Worker bundle and static-assets configuration without changing the live deployment.

@@ -147,7 +147,7 @@ async function listLeads(request, env) {
   const sql = `SELECT id, created_at, contact_name, email, business_name, business_type, location, website,
     growth_challenge, monthly_customers, consent_version, status,
     COALESCE(priority, 'normal') AS priority, COALESCE(notes, '') AS notes,
-    COALESCE(next_action, '') AS next_action, updated_at, ${SALES_COLUMNS}
+    COALESCE(next_action, '') AS next_action, COALESCE(updated_at, created_at) AS updated_at, ${SALES_COLUMNS}
     FROM leads ${where.length ? `WHERE ${where.join(" AND ")}` : ""}
     ORDER BY ${sorts[sort]} LIMIT ? OFFSET ?`;
   binds.push(limit, offset);
@@ -181,7 +181,7 @@ async function updateLead(request, env, id) {
   if (expectedUpdatedAt) binds.push(expectedUpdatedAt);
 
   try {
-    const where = expectedUpdatedAt ? "WHERE id = ? AND updated_at = ?" : "WHERE id = ?";
+    const where = expectedUpdatedAt ? "WHERE id = ? AND COALESCE(updated_at, created_at) = ?" : "WHERE id = ?";
     const result = await env.DB.prepare(`UPDATE leads SET ${updates.join(", ")} ${where}`).bind(...binds).run();
     if (!result.meta?.changes) {
       if (!expectedUpdatedAt) return json({ error: "Lead not found." }, 404);

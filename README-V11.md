@@ -98,7 +98,7 @@ See [docs/V11-API.md](docs/V11-API.md) for routes, field names, limits, derived 
 
 ## Validation and limitations
 
-- 24 Node tests pass: existing public form validation/API tests plus real SQLite-backed admin/API tests, every stage under V10's CHECK constraint, ALTER data preservation, migration replay rejection, field validation, dates, missing records, authorization, stale-edit protection, proposal privacy and 208-lead pagination/global totals, follow-up views, safe sorting and UTC shortcuts.
+- 25 Node tests pass: existing public form validation/API tests plus real SQLite-backed admin/API tests, every stage under V10's CHECK constraint, ALTER data preservation, migration replay rejection, field validation, dates, missing records, authorization, stale-edit protection for current and legacy leads, proposal privacy and 208-lead pagination/global totals, follow-up views, safe sorting and UTC shortcuts.
 - JavaScript syntax checks cover the Worker, validation, sales helpers, admin modules, existing public scripts and the new motion script.
 - Chromium browser smoke test passed: invalid/valid token, editing, calculations, qualification, proposal privacy/download, save/reload, won stage, filtering and lock. New controls also passed: stage/follow-up filters, deadline and stage shortcuts, unsaved-edit cancellation, hidden-field validation, keyboard tabs and proposal readiness. Desktop (1440px) and mobile (390px) inspected; no browser errors or horizontal mobile overflow.
 - Warm Studio browser checks passed: actual public audit submission to local SQLite, desktop/mobile layouts, themed demo and supporting pages, and reduced-motion behavior (no animations, no transitions, automatic scrolling).

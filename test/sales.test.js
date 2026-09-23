@@ -106,6 +106,18 @@ test('stale admin edits are rejected without overwriting newer work', async () =
   db.close();
 });
 
+test('legacy leads without updated_at still reject stale first saves', async () => {
+  const { env, db } = fixture();
+  const listed = await (await worker.fetch(req('/api/admin/leads'), env)).json();
+  const version = listed.leads[0].updated_at;
+  assert.ok(version);
+  assert.equal(db.prepare('SELECT updated_at FROM leads WHERE id = ?').get(id).updated_at, null);
+  assert.equal((await patchWithVersion(env, { notes: 'First legacy-tab save' }, version)).status, 200);
+  assert.equal((await patchWithVersion(env, { notes: 'Stale legacy-tab save' }, version)).status, 409);
+  assert.equal(db.prepare('SELECT notes FROM leads WHERE id = ?').get(id).notes, 'First legacy-tab save');
+  db.close();
+});
+
 test('rejects malformed admin inputs without modifying a lead', async () => {
   const { env, db } = fixture();
   const before = db.prepare('SELECT * FROM leads').get();
