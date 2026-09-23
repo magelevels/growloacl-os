@@ -4,7 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import worker from '../src/index.js';
 import { STAGES, validateLeadUpdate, enrichLead } from '../src/sales.js';
-import { proposalText } from '../public/admin/proposal.js';
+import { proposalText, csvCell, leadsCsv } from '../public/admin/proposal.js';
 
 const id = '11111111-1111-4111-8111-111111111111';
 const migration = name => readFileSync(new URL(`../migrations/${name}`, import.meta.url), 'utf8');
@@ -148,6 +148,16 @@ test('proposal uses edited commercial data and excludes private notes, checklist
   for (const expected of ['Client Café','£1,000.00','£200.00','£3,400.00','Agreed deliverables','VAT to be agreed','2026-10-01']) assert.ok(text.includes(expected));
   assert.ok(!text.includes('SECRET')); assert.ok(!text.includes('75'));
   assert.match(proposalText({}), /to be confirmed|to be agreed/);
+});
+
+test('CSV export escapes cells and includes the operational lead fields', () => {
+  assert.equal(csvCell('Cafe, "North"'), '"Cafe, ""North"""');
+  assert.equal(csvCell('line one\nline two'), '"line one\nline two"');
+  const csv = leadsCsv([{ business_name: 'Test Café', contact_name: 'Taylor', email: 'taylor@example.com', location: 'Northampton', status: 'contacted', priority: 'high', setup_fee: 1000, monthly_value: 200, probability: 50, expected_value: 1700, next_action: 'Call, then email', next_action_date: '2026-10-01', qualification_score: 60, proposal_status: 'draft', created_at: '2026-09-15T10:00:00Z', updated_at: '2026-09-15T11:00:00Z' }]);
+  assert.match(csv, /^Business,Contact,Email,/);
+  assert.match(csv, /"Call, then email"/);
+  assert.match(csv, /Test Café,Taylor,taylor@example.com,Northampton,contacted,high,1000,200,50,1700,/);
+  assert.ok(csv.endsWith('\r\n'));
 });
 
 test('qualification and terminal probability are derived defensively', () => {

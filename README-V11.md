@@ -24,6 +24,7 @@ This ZIP replaces the earlier V11 patch and still uses the same `0003_sales_conv
 - Private prospect research, audit findings and recommendations, existing private notes and prospect brief.
 - Proposal status, scope, editable commercial terms and validity date; generate, preview, copy or download a text draft. Nothing is sent automatically. Private notes/research, checklist and probability are excluded. Edit proposal status and pipeline stage separately; save to persist source fields. Generated text itself is not separately stored.
 - Global revenue cards show open first-year pipeline, weighted forecast, won setup fees and won MRR. Clickable stage counts and follow-up counts cover the entire database. Search/filter run on the server; inbox pages hold up to 200 leads.
+- **Export CSV** downloads every lead matching the current search, stage, sort and follow-up view, including operational contact, commercial, qualification, proposal and follow-up fields. It is a local browser download and does not modify D1 or send email.
 - Existing public audit funnel, D1 insert, consent checks, priority, notes, next action, email link, prospect brief retained; visual styling updated to Warm Studio.
 - All `/api/admin/*` methods, including unknown admin routes, require `Authorization: Bearer <ADMIN_TOKEN>`; responses use `Cache-Control: no-store`. `/admin/` retains V10's public empty login shell, with all lead data and operations behind the token. No public GET endpoint for leads exists. The token stays in sessionStorage and is never placed in a URL or source file.
 

@@ -42,6 +42,35 @@ export function proposalReadiness(lead) {
     ["Validity date", Boolean(lead.proposal_valid_until)],
   ];
 }
+
+export function csvCell(value) {
+  const text = String(value ?? "");
+  return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
+}
+
+export function leadsCsv(leads = []) {
+  const headers = ["Business", "Contact", "Email", "Location", "Stage", "Priority", "Setup fee (GBP)", "Monthly recurring (GBP)", "Probability (%)", "Expected first-year (GBP)", "Next action", "Action deadline", "Qualification (%)", "Proposal status", "Submitted", "Updated"];
+  const rows = leads.map(lead => [
+    lead.business_name,
+    lead.contact_name,
+    lead.email,
+    lead.location,
+    lead.status,
+    lead.priority,
+    lead.setup_fee,
+    lead.monthly_value,
+    lead.probability,
+    lead.expected_value,
+    lead.next_action,
+    lead.next_action_date,
+    lead.qualification_score,
+    lead.proposal_status,
+    lead.created_at,
+    lead.updated_at,
+  ]);
+  return [headers, ...rows].map(row => row.map(csvCell).join(",")).join("\r\n") + "\r\n";
+}
+
 export function deadlineInDays(days, now = new Date()) {
   const date = new Date(now);
   date.setUTCDate(date.getUTCDate() + days);

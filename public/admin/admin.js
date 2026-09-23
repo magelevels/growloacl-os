@@ -1,4 +1,4 @@
-import { STAGES, CHECKLIST, money, proposalText, proposalReadiness, deadlineInDays } from "./proposal.js";
+import { STAGES, CHECKLIST, money, proposalText, proposalReadiness, deadlineInDays, leadsCsv } from "./proposal.js";
 const $ = s => document.querySelector(s);
 const state = { token: sessionStorage.getItem("growlocal_admin_token") || "", leads: [], selected: null, summary: {}, offset: 0, hasMore: false, dirty: false, busy: false, view: "all", tab: "opportunity", filters: { q: "", status: "", sort: "priority", view: "all", offset: 0 } };
 const loginPanel = $("#loginPanel"), appPanel = $("#appPanel"), leadList = $("#leadList"), detailPanel = $("#detailPanel"), errorBox = $("#errorBox");
@@ -133,6 +133,42 @@ async function copyBrief() {
   const text = auditBrief(formLead(l)); $("#briefBox").hidden = false; $("#briefBox").textContent = text;
   try { await navigator.clipboard.writeText(text); $("#saveMessage").textContent = "Prospect brief copied."; } catch { $("#saveMessage").textContent = "Copy the prospect brief below manually."; }
 }
+async function exportInbox() {
+  if (state.busy) return;
+  const button = $("#exportBtn");
+  const label = button.textContent;
+  state.busy = true;
+  setFilterBusy(true);
+  button.disabled = true;
+  button.textContent = "Preparing…";
+  errorBox.hidden = true;
+  try {
+    const rows = [];
+    let offset = 0;
+    while (true) {
+      const query = new URLSearchParams({ limit: "200", offset: String(offset), q: $("#searchInput").value.trim(), status: $("#statusFilter").value, view: state.view, sort: $("#sortFilter").value });
+      const data = await api(`/api/admin/leads?${query}`);
+      const page = data.leads || [];
+      rows.push(...page);
+      if (!data.hasMore || page.length === 0) break;
+      offset += page.length;
+    }
+    const url = URL.createObjectURL(new Blob([leadsCsv(rows)], { type: "text/csv;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `growlocal-leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    $("#loadStatus").textContent = `${rows.length} lead${rows.length === 1 ? "" : "s"} exported.`;
+  } catch (error) {
+    showError(error.message);
+  } finally {
+    state.busy = false;
+    setFilterBusy(false);
+    button.disabled = false;
+    button.textContent = label;
+  }
+}
 async function load(preferred = state.selected) {
   setFilterBusy(true);
   errorBox.hidden = true; $("#loadStatus").textContent = "Updating inbox…"; $("#workspace").setAttribute("aria-busy", "true");
@@ -160,6 +196,7 @@ $("#statusFilter").innerHTML = '<option value="">All stages</option>' + options(
 $("#loginForm").addEventListener("submit", async e => { e.preventDefault(); if (state.busy) return; state.busy = true; state.token = $("#tokenInput").value.trim(); try { if (await load()) sessionStorage.setItem("growlocal_admin_token", state.token); } finally { state.busy = false; } });
 $("#refreshBtn").addEventListener("click", () => navigate(state.offset));
 $("#filterForm").addEventListener("submit", e => { e.preventDefault(); navigate(0); });
+$("#exportBtn").addEventListener("click", exportInbox);
 $("#statusFilter").addEventListener("change", () => navigate(0));
 $("#sortFilter").addEventListener("change", () => navigate(0));
 $("#clearFiltersBtn").addEventListener("click", () => { if (state.busy || !canLeave()) return; $("#searchInput").value = ""; $("#statusFilter").value = ""; $("#sortFilter").value = "priority"; state.view = "all"; navigate(0, true); });
