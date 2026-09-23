@@ -44,7 +44,10 @@ export function proposalReadiness(lead) {
 }
 
 export function csvCell(value) {
-  const text = String(value ?? "");
+  const raw = String(value ?? "");
+  // Lead data can come from the public form. Prefix spreadsheet formula
+  // triggers so opening the export cannot execute attacker-controlled input.
+  const text = /^[=+\-@]/.test(raw) ? `'${raw}` : raw;
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
 

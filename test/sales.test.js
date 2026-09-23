@@ -153,6 +153,8 @@ test('proposal uses edited commercial data and excludes private notes, checklist
 test('CSV export escapes cells and includes the operational lead fields', () => {
   assert.equal(csvCell('Cafe, "North"'), '"Cafe, ""North"""');
   assert.equal(csvCell('line one\nline two'), '"line one\nline two"');
+  assert.equal(csvCell('=HYPERLINK("https://example.test")'), '"\'=HYPERLINK(""https://example.test"")"');
+  assert.equal(csvCell('@mention'), "'@mention");
   const csv = leadsCsv([{ business_name: 'Test Café', contact_name: 'Taylor', email: 'taylor@example.com', location: 'Northampton', status: 'contacted', priority: 'high', setup_fee: 1000, monthly_value: 200, probability: 50, expected_value: 1700, next_action: 'Call, then email', next_action_date: '2026-10-01', qualification_score: 60, proposal_status: 'draft', created_at: '2026-09-15T10:00:00Z', updated_at: '2026-09-15T11:00:00Z' }]);
   assert.match(csv, /^Business,Contact,Email,/);
   assert.match(csv, /"Call, then email"/);
