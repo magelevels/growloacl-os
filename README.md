@@ -18,8 +18,8 @@ There is deliberately no public `GET` route for leads.
 The checked-in `wrangler.jsonc` is configured for the `growlocal-leads` D1 database. If recreating the infrastructure in another Cloudflare account, create a replacement from the repository root:
 
 ```bash
-npm install
-npx wrangler d1 create growlocal-leads
+pnpm install --frozen-lockfile
+pnpm exec wrangler d1 create growlocal-leads
 ```
 
 Copy the returned database ID into `wrangler.jsonc`. For the current production account, this step is already complete. The production migration was applied manually and must not be rerun with `migrations apply --remote`; follow the verification and deployment sequence in [README-V11.md](README-V11.md). Once the schema is confirmed, run:
