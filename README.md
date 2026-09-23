@@ -1,4 +1,4 @@
-> **V11 Sales & Conversion:** see [README-V11.md](README-V11.md) for the required additive D1 migration, manual deployment steps, API fields and release notes. Apply the V11 migration before deploying this code.
+> **V11 Sales & Conversion:** see [README-V11.md](README-V11.md) for the additive D1 migration, manual deployment steps, API fields and release notes. The current production database already has the V11 migration applied; inspect the schema before changing an existing database and never blindly rerun the `ALTER TABLE` statements.
 
 # GrowLocal OS V9.2 — real lead capture
 
@@ -22,25 +22,25 @@ npm install
 npx wrangler d1 create growlocal-leads
 ```
 
-Copy the returned database ID into `wrangler.jsonc`. For the current production account, this step is already complete. Then run:
+Copy the returned database ID into `wrangler.jsonc`. For the current production account, this step is already complete. The production migration was applied manually and must not be rerun with `migrations apply --remote`; follow the verification and deployment sequence in [README-V11.md](README-V11.md). Once the schema is confirmed, run:
 
 ```bash
-npx wrangler d1 migrations apply growlocal-leads --remote
-npm run types
-npm run check
-npm run deploy:dry
-npm run deploy
+pnpm install --frozen-lockfile
+pnpm run types
+pnpm run check
+pnpm run deploy:dry
+pnpm run deploy
 ```
 
-Apply the migration before deployment so the first real form submission cannot reach a missing table. The existing Worker name and `workers.dev` route are preserved.
+For a brand-new replacement database, apply the migrations once before deployment so the first real form submission cannot reach a missing table. The existing Worker name and `workers.dev` route are preserved.
 
 ## Local development
 
 After replacing the D1 placeholder:
 
 ```bash
-npx wrangler d1 migrations apply growlocal-leads --local
-npm run dev
+pnpm exec wrangler d1 migrations apply growlocal-leads --local
+pnpm run dev
 ```
 
 The local form writes only to local D1 state. Do not use real customer information while testing.
@@ -58,4 +58,4 @@ npm run check
 npm run deploy:dry
 ```
 
-`npm run check` runs JavaScript syntax checks and eight validation/API regression tests. The dry run validates the Worker bundle and static-assets configuration without changing the live deployment.
+`pnpm run check` runs JavaScript syntax checks and 24 validation/API regression tests. The dry run validates the Worker bundle and static-assets configuration without changing the live deployment.
