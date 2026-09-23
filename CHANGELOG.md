@@ -3,6 +3,7 @@
 - Added optimistic edit locking so a stale admin tab cannot overwrite a newer lead update.
 - Added a 30-minute inactivity lock for the browser admin session.
 - Hardened CSV exports against spreadsheet formula injection from public lead fields.
+- Escaped locally entered demo lead names before rendering and made copy actions fail gracefully when the browser has no clipboard API.
 
 ## V11 mobile compatibility update (2026-09-06)
 
