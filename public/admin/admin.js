@@ -1,12 +1,15 @@
 import { STAGES, CHECKLIST, money, proposalText, proposalReadiness, deadlineInDays, leadsCsv } from "./proposal.js";
 const $ = s => document.querySelector(s);
+const IDLE_LOCK_MS = 30 * 60 * 1000;
 const state = { token: sessionStorage.getItem("growlocal_admin_token") || "", leads: [], selected: null, summary: {}, offset: 0, hasMore: false, dirty: false, busy: false, view: "all", tab: "opportunity", filters: { q: "", status: "", sort: "priority", view: "all", offset: 0 } };
+let idleTimer;
 const loginPanel = $("#loginPanel"), appPanel = $("#appPanel"), leadList = $("#leadList"), detailPanel = $("#detailPanel"), errorBox = $("#errorBox");
 function esc(value = "") { return String(value ?? "").replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[m])); }
 function dateLabel(v) { if (!v) return "—"; try { return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(new Date(v)); } catch { return esc(v); } }
-function lock() { sessionStorage.removeItem("growlocal_admin_token"); state.token = ""; state.leads = []; state.selected = null; state.dirty = false; detailPanel.replaceChildren(); leadList.replaceChildren(); $("#stats").replaceChildren(); $("#pipeline").replaceChildren(); $("#focusViews").replaceChildren(); $("#tokenInput").value = ""; appPanel.hidden = true; loginPanel.hidden = false; $("#lockBtn").hidden = true; }
+function armIdleLock() { clearTimeout(idleTimer); if (!state.token || appPanel.hidden) return; idleTimer = setTimeout(() => lock("Locked after 30 minutes of inactivity. Sign in again to continue."), IDLE_LOCK_MS); }
+function lock(message = "") { clearTimeout(idleTimer); sessionStorage.removeItem("growlocal_admin_token"); state.token = ""; state.leads = []; state.selected = null; state.dirty = false; detailPanel.replaceChildren(); leadList.replaceChildren(); $("#stats").replaceChildren(); $("#pipeline").replaceChildren(); $("#focusViews").replaceChildren(); $("#tokenInput").value = ""; appPanel.hidden = true; loginPanel.hidden = false; $("#lockBtn").hidden = true; if (message) $("#loginMessage").textContent = message; }
 async function api(path, options = {}) {
-  const res = await fetch(path, { ...options, headers: { "content-type": "application/json", authorization: `Bearer ${state.token}` } });
+  const res = await fetch(path, { ...options, headers: { "content-type": "application/json", authorization: `Bearer ${state.token}`, ...(options.headers || {}) } });
   const data = await res.json().catch(() => ({}));
   if (res.status === 401) { lock(); throw new Error("That admin token was not accepted. Please sign in again."); }
   if (!res.ok) throw new Error(data.error || "Request failed.");
@@ -121,7 +124,8 @@ async function saveSelected() {
   if (state.busy) return;
   const id = state.selected; const body = payload(); state.busy = true; $("#editFields").disabled = true; errorBox.hidden = true;
   try {
-    await api(`/api/admin/leads/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+    const lead = state.leads.find(item => item.id === id);
+    await api(`/api/admin/leads/${id}`, { method: "PATCH", body: JSON.stringify(body), headers: lead?.updated_at ? { "if-match": lead.updated_at } : {} });
     state.dirty = false;
     const refreshed = await load(id);
     if ($("#saveMessage")) $("#saveMessage").textContent = refreshed ? "Lead saved." : "Lead saved, but refresh failed. Use Refresh to reload the latest values.";
@@ -176,7 +180,7 @@ async function load(preferred = state.selected) {
   try {
     const [data, summary] = await Promise.all([api(`/api/admin/leads?${query}`), api("/api/admin/summary")]);
     state.leads = data.leads || []; state.hasMore = data.hasMore; state.summary = summary.summary || {};
-    loginPanel.hidden = true; appPanel.hidden = false; $("#lockBtn").hidden = false; $("#tokenInput").value = "";
+    loginPanel.hidden = true; appPanel.hidden = false; $("#lockBtn").hidden = false; $("#tokenInput").value = ""; armIdleLock();
     state.filters = { q: $("#searchInput").value, status: $("#statusFilter").value, sort: $("#sortFilter").value, view: state.view, offset: state.offset };
     stats(); selectLead(state.leads.some(l => l.id === preferred) ? preferred : state.leads[0]?.id);
     return true;
@@ -204,4 +208,5 @@ $("#previousBtn").addEventListener("click", () => navigate(state.offset - 200));
 $("#nextBtn").addEventListener("click", () => navigate(state.offset + 200));
 $("#lockBtn").addEventListener("click", () => { if (!state.busy && canLeave()) lock(); });
 window.addEventListener("beforeunload", e => { if (state.dirty) { e.preventDefault(); e.returnValue = ""; } });
+for (const event of ["pointerdown", "keydown", "touchstart", "scroll"]) window.addEventListener(event, armIdleLock, { passive: true });
 if (state.token) load();

@@ -1,3 +1,9 @@
+## V11 admin safety update (2026-09-23)
+
+- Added optimistic edit locking so a stale admin tab cannot overwrite a newer lead update.
+- Added a 30-minute inactivity lock for the browser admin session.
+- Hardened CSV exports against spreadsheet formula injection from public lead fields.
+
 ## V11 mobile compatibility update (2026-09-06)
 
 - Enlarged touch controls, prevented small form text, stacked narrow detail layouts and kept mobile save controls from covering fields.

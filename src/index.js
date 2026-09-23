@@ -172,13 +172,22 @@ async function updateLead(request, env, id) {
   if (validated.error) return json({ error: validated.error }, 422);
   const updates = Object.keys(validated.data).map(column => `${column} = ?`);
   const binds = Object.values(validated.data);
+  const expectedUpdatedAt = request.headers.get("if-match")?.trim() || "";
 
-  updates.push("updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')");
+  // Keep the timestamp readable while adding entropy so two rapid saves still
+  // receive different optimistic-lock versions.
+  updates.push("updated_at = strftime('%Y-%m-%dT%H:%M:%f', 'now') || printf('%04dZ', abs(random()) % 10000)");
   binds.push(id);
+  if (expectedUpdatedAt) binds.push(expectedUpdatedAt);
 
   try {
-    const result = await env.DB.prepare(`UPDATE leads SET ${updates.join(", ")} WHERE id = ?`).bind(...binds).run();
-    if (!result.meta?.changes) return json({ error: "Lead not found." }, 404);
+    const where = expectedUpdatedAt ? "WHERE id = ? AND updated_at = ?" : "WHERE id = ?";
+    const result = await env.DB.prepare(`UPDATE leads SET ${updates.join(", ")} ${where}`).bind(...binds).run();
+    if (!result.meta?.changes) {
+      if (!expectedUpdatedAt) return json({ error: "Lead not found." }, 404);
+      const current = await env.DB.prepare("SELECT id FROM leads WHERE id = ?").bind(id).first();
+      return current ? json({ error: "This lead changed in another session. Refresh before saving." }, 409) : json({ error: "Lead not found." }, 404);
+    }
     return json({ ok: true });
   } catch (error) {
     console.error(JSON.stringify({ event: "admin_lead_update_failed", message: error instanceof Error ? error.message : "unknown" }));

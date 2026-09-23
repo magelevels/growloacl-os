@@ -29,6 +29,7 @@ function fixture({ migrate = true } = {}) {
 }
 const req = (path, method = 'GET', body, token = 'test-only-token', headers = {}) => new Request(`https://example.test${path}`, { method, headers: { ...(token ? { authorization: `Bearer ${token}` } : {}), ...(body !== undefined ? { 'content-type': 'application/json' } : {}), ...headers }, body: body === undefined ? undefined : JSON.stringify(body) });
 const patch = (env, body) => worker.fetch(req(`/api/admin/leads/${id}`, 'PATCH', body), env);
+const patchWithVersion = (env, body, version) => worker.fetch(req(`/api/admin/leads/${id}`, 'PATCH', body, 'test-only-token', { 'if-match': version }), env);
 
 test('ALTER migration preserves every original field and legacy closed status', () => {
   const { db } = fixture({ migrate: false });
@@ -88,6 +89,20 @@ test('commercial and workspace fields persist, dates clear, and expected value i
   assert.equal((await patch(env, { nextActionDate: null, proposalValidUntil: '' })).status, 200);
   assert.equal(db.prepare('SELECT next_action_date FROM leads').get().next_action_date, null);
   assert.equal(lead.notes, 'Keep\nnewlines');
+  db.close();
+});
+
+test('stale admin edits are rejected without overwriting newer work', async () => {
+  const { env, db } = fixture();
+  assert.equal((await patch(env, { notes: 'Baseline edit' })).status, 200);
+  const current = db.prepare('SELECT updated_at FROM leads WHERE id = ?').get(id).updated_at;
+  assert.equal((await patchWithVersion(env, { notes: 'First saved edit' }, current)).status, 200);
+  const saved = db.prepare('SELECT updated_at, notes FROM leads WHERE id = ?').get(id);
+  assert.notEqual(saved.updated_at, current);
+  const conflict = await patchWithVersion(env, { notes: 'Stale tab edit' }, current);
+  assert.equal(conflict.status, 409);
+  assert.equal(db.prepare('SELECT notes FROM leads WHERE id = ?').get(id).notes, 'First saved edit');
+  assert.equal((await patch(env, { notes: 'Legacy client edit' })).status, 200);
   db.close();
 });
 
