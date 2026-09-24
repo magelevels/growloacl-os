@@ -32,6 +32,22 @@ messages outside the repository at `~/.growlocal-agent-bridge/growlocal-os`,
 so coordination does not create noisy commits. Available tools are
 `read_board`, `claim_task`, `send_message`, and `submit_handoff`.
 
+## Connecting the clients
+
+1. Open this repository as the active project in Kimi Code and Antigravity.
+2. In Kimi Code, run `/mcp` and confirm `growlocal-agent-bridge` is connected.
+3. In Antigravity, reload the workspace MCP configuration or open `/mcp` and
+   confirm the same server is connected.
+4. In Codex, add the same stdio server through the desktop MCP configuration:
+   command `python3`, arguments `tools/agent-bridge/server.py`, working
+   directory set to the repository root.
+5. Start each agent with: “Read `AGENTS.md`, call `read_board`, claim a
+   bounded task, and send a message before editing.”
+
+If the Codex desktop client does not expose local MCP configuration in the
+current build, Codex can still coordinate through the shared GitHub branches
+and the board files; the other two agents remain connected to the live bridge.
+
 If an agent cannot load MCP, use GitHub pull-request comments or a committed
 note under `docs/agent-handoffs/`; never rely on an unrecorded chat message.
 
