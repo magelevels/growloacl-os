@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "growlocal-agent-bridge": {
+      "command": "python3",
+      "args": ["tools/agent-bridge/server.py"],
+      "cwd": "."
+    }
+  }
+}

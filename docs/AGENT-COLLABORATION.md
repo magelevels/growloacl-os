@@ -25,9 +25,15 @@ Next agent: <who should review or continue>
 
 ## Direct messaging
 
-When an MCP coordination bridge is configured, use it for live messages and
-task claims. Otherwise, use GitHub pull-request comments or a committed note
-under `docs/agent-handoffs/`; never rely on an unrecorded chat message.
+The repository includes a local MCP coordination bridge at
+`tools/agent-bridge/server.py`. Kimi Code loads it from `.kimi-code/mcp.json`
+and Antigravity loads it from `.agents/mcp_config.json`. The bridge stores
+messages outside the repository at `~/.growlocal-agent-bridge/growlocal-os`,
+so coordination does not create noisy commits. Available tools are
+`read_board`, `claim_task`, `send_message`, and `submit_handoff`.
+
+If an agent cannot load MCP, use GitHub pull-request comments or a committed
+note under `docs/agent-handoffs/`; never rely on an unrecorded chat message.
 
 ## Suggested division of work
 
