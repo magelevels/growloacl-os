@@ -49,10 +49,10 @@
       <div class="pagination"><button id="previousBtn" class="ghost">Previous</button><span id="pageLabel" class="lead-meta"></span><button id="nextBtn" class="ghost">Next</button></div>
       <p class="lead-meta summary-note">Summary covers all leads. Values are GBP forecasts; weighted pipeline excludes won, lost and archived leads.</p>
 
-      <div id="errorBox" class="error" hidden></div>
+      <div id="errorBox" class="error" role="alert" aria-live="assertive" hidden></div>
       <div class="layout" id="workspace">
-        <div id="leadList" class="lead-list"></div>
-        <aside id="detailPanel" class="detail empty"><p>Select a lead to review the enquiry and plan the next move.</p></aside>
+        <div id="leadList" class="lead-list" aria-label="Lead inbox results"></div>
+        <aside id="detailPanel" class="detail empty" aria-label="Lead details"><p>Select a lead to review the enquiry and plan the next move.</p></aside>
       </div>
     </section>
   </main>
