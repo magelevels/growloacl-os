@@ -6,6 +6,7 @@
 - Added optimistic edit locking so a stale admin tab cannot overwrite a newer lead update, including legacy leads whose `updated_at` was previously empty.
 - Added a 30-minute inactivity lock for the browser admin session.
 - Hardened CSV exports against spreadsheet formula injection from public lead fields.
+- Normalized empty admin summary aggregates to numeric zero values for a consistent inbox API.
 - Escaped locally entered demo lead names before rendering and made copy actions fail gracefully when the browser has no clipboard API.
 - Made demo state loading tolerant of malformed local storage and report save failures without breaking the workspace.
 
