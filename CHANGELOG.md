@@ -2,6 +2,7 @@
 
 - Added age indicators to the admin inbox so older enquiries are visible at a glance.
 - Improved demo navigation accessibility with active-page announcements, mobile-menu state labels and reduced-motion-aware page scrolling.
+- Versioned demo browser storage for V11 while preserving existing V8 state during the transition.
 - Added optimistic edit locking so a stale admin tab cannot overwrite a newer lead update, including legacy leads whose `updated_at` was previously empty.
 - Added a 30-minute inactivity lock for the browser admin session.
 - Hardened CSV exports against spreadsheet formula injection from public lead fields.
