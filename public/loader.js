@@ -4,12 +4,13 @@
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const started = performance.now();
+  const minimumDisplay = 760;
   let hidden = false;
 
   const hide = () => {
     if (hidden) return;
     hidden = true;
-    const wait = reduced ? 0 : Math.max(0, 520 - (performance.now() - started));
+    const wait = reduced ? 0 : Math.max(0, minimumDisplay - (performance.now() - started));
     window.setTimeout(() => {
       loader.classList.add("is-ready");
       loader.setAttribute("aria-hidden", "true");
@@ -21,5 +22,5 @@
 
   if (document.readyState === "complete") hide();
   else window.addEventListener("load", hide, { once: true });
-  window.setTimeout(hide, 2200);
+  window.setTimeout(hide, 3200);
 })();
