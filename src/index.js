@@ -199,17 +199,17 @@ async function salesSummary(env) {
   if (!env.DB) return json({ error: "Lead storage is not configured." }, 503);
   try {
     const result = await env.DB.prepare(`SELECT COUNT(*) AS total,
-      SUM(CASE WHEN stage = 'new' THEN 1 ELSE 0 END) AS new_count,
-      SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END) AS high_count,
-      SUM(CASE WHEN stage NOT IN ('won','lost','archived') THEN setup_fee + 12 * monthly_value ELSE 0 END) AS pipeline_value,
-      SUM(CASE WHEN stage NOT IN ('won','lost','archived') THEN (setup_fee + 12 * monthly_value) * probability / 100.0 ELSE 0 END) AS expected_value,
-      SUM(CASE WHEN stage = 'won' THEN setup_fee ELSE 0 END) AS won_setup,
-      SUM(CASE WHEN stage = 'won' THEN monthly_value ELSE 0 END) AS won_mrr,
-      SUM(CASE WHEN stage NOT IN ('won','lost','archived') AND next_action_date <> '' AND next_action_date < date('now') THEN 1 ELSE 0 END) AS overdue,
-      SUM(CASE WHEN stage NOT IN ('won','lost','archived') AND next_action_date = date('now') THEN 1 ELSE 0 END) AS due_today,
-      SUM(CASE WHEN stage NOT IN ('won','lost','archived') AND (next_action_date IS NULL OR next_action_date = '' OR trim(next_action) = '') THEN 1 ELSE 0 END) AS unscheduled,
-      SUM(CASE WHEN stage NOT IN ('won','lost','archived') AND proposal_status = 'sent' THEN 1 ELSE 0 END) AS sent_proposals,
-      ${STAGES.map(stage => `SUM(CASE WHEN stage = '${stage}' THEN 1 ELSE 0 END) AS stage_${stage}`).join(', ')}
+      COALESCE(SUM(CASE WHEN stage = 'new' THEN 1 ELSE 0 END), 0) AS new_count,
+      COALESCE(SUM(CASE WHEN priority = 'high' THEN 1 ELSE 0 END), 0) AS high_count,
+      COALESCE(SUM(CASE WHEN stage NOT IN ('won','lost','archived') THEN setup_fee + 12 * monthly_value ELSE 0 END), 0) AS pipeline_value,
+      COALESCE(SUM(CASE WHEN stage NOT IN ('won','lost','archived') THEN (setup_fee + 12 * monthly_value) * probability / 100.0 ELSE 0 END), 0) AS expected_value,
+      COALESCE(SUM(CASE WHEN stage = 'won' THEN setup_fee ELSE 0 END), 0) AS won_setup,
+      COALESCE(SUM(CASE WHEN stage = 'won' THEN monthly_value ELSE 0 END), 0) AS won_mrr,
+      COALESCE(SUM(CASE WHEN stage NOT IN ('won','lost','archived') AND next_action_date <> '' AND next_action_date < date('now') THEN 1 ELSE 0 END), 0) AS overdue,
+      COALESCE(SUM(CASE WHEN stage NOT IN ('won','lost','archived') AND next_action_date = date('now') THEN 1 ELSE 0 END), 0) AS due_today,
+      COALESCE(SUM(CASE WHEN stage NOT IN ('won','lost','archived') AND (next_action_date IS NULL OR next_action_date = '' OR trim(next_action) = '') THEN 1 ELSE 0 END), 0) AS unscheduled,
+      COALESCE(SUM(CASE WHEN stage NOT IN ('won','lost','archived') AND proposal_status = 'sent' THEN 1 ELSE 0 END), 0) AS sent_proposals,
+      ${STAGES.map(stage => `COALESCE(SUM(CASE WHEN stage = '${stage}' THEN 1 ELSE 0 END), 0) AS stage_${stage}`).join(', ')}
       FROM (SELECT *, ${STAGE_SQL} AS stage FROM leads)`).first();
     return json({ ok: true, summary: result });
   } catch { return json({ error: "Could not load sales summary. Check the V11 migration has been applied." }, 500); }

@@ -170,6 +170,19 @@ test('missing lead and storage failures return safe errors', async () => {
   db.close();
 });
 
+test('empty summary returns numeric zero totals', async () => {
+  const { env, db } = fixture();
+  db.exec('DELETE FROM leads');
+  const response = await worker.fetch(req('/api/admin/summary'), env);
+  assert.equal(response.status, 200);
+  const { summary } = await response.json();
+  for (const [key, value] of Object.entries(summary)) {
+    assert.equal(typeof value, 'number', key);
+    assert.equal(value, 0, key);
+  }
+  db.close();
+});
+
 test('proposal uses edited commercial data and excludes private notes, checklist and probability', () => {
   const text = proposalText({ business_name: 'Client Café', contact_name: 'Sam', email: 'sam@example.com', setup_fee: 1000, monthly_value: 200, audit_findings: 'Observed problem', audit_recommendations:'Recommendation', proposal_scope:'Agreed deliverables', proposal_terms:'VAT to be agreed', proposal_valid_until:'2026-10-01', notes:'SECRET NOTES', prospect_notes:'SECRET RESEARCH', probability: 75 });
   for (const expected of ['Client Café','£1,000.00','£200.00','£3,400.00','Agreed deliverables','VAT to be agreed','2026-10-01']) assert.ok(text.includes(expected));
