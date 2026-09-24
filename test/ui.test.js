@@ -15,3 +15,15 @@ test('admin workspace exposes accessible results, errors and tab semantics', () 
   assert.equal((script.match(/aria-selected="false" tabindex="-1"/g) || []).length, 3);
   assert.equal((script.match(/role="tabpanel"[^>]*tabindex="0"/g) || []).length, 3);
 });
+
+test('public homepage includes a safe, accessible entry transition', () => {
+  const page = read('public/index.html');
+  const loader = read('public/loader.js');
+
+  assert.match(page, /id="site-loader"/);
+  assert.match(page, /role="status"/);
+  assert.match(page, /aria-label="Loading GrowLocal"/);
+  assert.match(loader, /prefers-reduced-motion/);
+  assert.match(loader, /2200/);
+  assert.match(loader, /aria-hidden/);
+});

@@ -85,6 +85,104 @@ body {
   min-height: 100vh;
 }
 
+/* A short brand-led entry transition. It is only enabled when JavaScript is
+   available, so a blocked script can never hide the page content. */
+.site-loader {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  place-items: center;
+  background: var(--bg);
+  color: var(--text-pure);
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 420ms ease, visibility 420ms ease;
+}
+
+.js .site-loader { display: grid; }
+
+.site-loader.is-ready {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.site-loader__inner {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  width: min(240px, calc(100vw - 48px));
+}
+
+.site-loader__mark {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  width: 52px;
+  height: 52px;
+  padding: 12px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #2b5c40 0%, #1a3d28 100%);
+  box-shadow: 0 12px 30px rgba(35, 77, 53, 0.18);
+}
+
+.site-loader__mark i {
+  width: 6px;
+  border-radius: 999px;
+  background: #fffaf1;
+  transform-origin: bottom;
+  animation: site-loader-bar 900ms ease-in-out infinite;
+}
+
+.site-loader__mark i:nth-child(1) { height: 12px; animation-delay: -180ms; }
+.site-loader__mark i:nth-child(2) { height: 20px; animation-delay: -360ms; }
+.site-loader__mark i:nth-child(3) { height: 28px; animation-delay: -540ms; }
+
+.site-loader__name {
+  font-family: var(--font-serif);
+  font-size: 34px;
+  letter-spacing: -0.045em;
+}
+
+.site-loader__line {
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.site-loader__line span {
+  display: block;
+  width: 40%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--mint);
+  animation: site-loader-progress 1.2s ease-in-out infinite;
+}
+
+@keyframes site-loader-bar {
+  0%, 100% { transform: scaleY(.65); opacity: .65; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+@keyframes site-loader-progress {
+  0% { transform: translateX(-120%); }
+  100% { transform: translateX(360%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-loader { transition-duration: 1ms; }
+  .site-loader__mark i,
+  .site-loader__line span { animation: none; }
+}
+
+@media (max-width: 620px) {
+  .site-loader__name { font-size: 30px; }
+}
+
 a {
   color: inherit;
   text-decoration: none;

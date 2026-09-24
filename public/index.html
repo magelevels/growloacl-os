@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script>document.documentElement.classList.add("js");</script>
   <meta name="theme-color" content="#f8f6f0">
   <title>GrowLocal — Growth operating system for local businesses</title>
   <meta name="description" content="GrowLocal turns scattered local-business marketing into a clear monthly growth system built around customers, repeat visits, spend and reputation.">
@@ -20,6 +21,13 @@
   <link rel="stylesheet" href="/warm-studio.css">
 </head>
 <body>
+  <div class="site-loader" id="site-loader" role="status" aria-label="Loading GrowLocal">
+    <div class="site-loader__inner">
+      <span class="site-loader__mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="site-loader__name">GrowLocal</span>
+      <span class="site-loader__line" aria-hidden="true"><span></span></span>
+    </div>
+  </div>
   <nav class="nav">
     <div class="wrap nav-inner">
       <a class="brand" href="/" aria-label="GrowLocal Homepage">
@@ -343,5 +351,6 @@
   </footer>
   <script src="/audit.js" defer></script>
   <script src="/motion.js" defer></script>
+  <script src="/loader.js" defer></script>
 </body>
 </html>
