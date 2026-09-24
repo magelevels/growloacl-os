@@ -7,6 +7,7 @@
 - Added a 30-minute inactivity lock for the browser admin session.
 - Hardened CSV exports against spreadsheet formula injection from public lead fields.
 - Normalized empty admin summary aggregates to numeric zero values for a consistent inbox API.
+- Refined the public marketing site with the Warm Studio typography, navigation, pricing, audit-form and responsive visual polish.
 - Escaped locally entered demo lead names before rendering and made copy actions fail gracefully when the browser has no clipboard API.
 - Made demo state loading tolerant of malformed local storage and report save failures without breaking the workspace.
 
