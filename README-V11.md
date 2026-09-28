@@ -27,6 +27,7 @@ This ZIP replaces the earlier V11 patch and still uses the same `0003_sales_conv
 - **Export CSV** downloads every lead matching the current search, stage, sort and follow-up view, including operational contact, commercial, qualification, proposal and follow-up fields. It is a local browser download and does not modify D1 or send email.
 - Existing public audit funnel, D1 insert, consent checks, priority, notes, next action, email link, prospect brief retained; visual styling updated to Warm Studio.
 - All `/api/admin/*` methods, including unknown admin routes, require `Authorization: Bearer <ADMIN_TOKEN>`; responses use `Cache-Control: no-store`. `/admin/` retains V10's public empty login shell, with all lead data and operations behind the token. No public GET endpoint for leads exists. The token stays in sessionStorage and is never placed in a URL or source file.
+- The public audit form uses a managed Cloudflare Turnstile widget. Production must keep the `TURNSTILE_SECRET` Worker secret present; the Worker validates the token server-side, including the expected action and hostname, before writing to D1. Cross-site requests are rejected using Origin and Fetch Metadata checks.
 
 ## Manual deployment — do this in order
 
@@ -46,7 +47,7 @@ This ZIP replaces the earlier V11 patch and still uses the same `0003_sales_conv
    FROM leads GROUP BY status, pipeline_stage;
    ```
    Existing leads must still be present (the count can increase if the public form receives a submission). Confirm all 13 added columns and both new indexes exist. In GitHub, upload/commit the patch files with their folder paths to the same repository/production branch used for V10. Let the existing Cloudflare Worker build deploy them; if automatic builds are disabled, use the Worker’s existing deployment workflow or the CLI alternative below. Do not upload the ZIP as a single repository file.
-5. In **Workers & Pages → growloacl-os**, verify the `DB` binding still targets `growlocal-leads`, the existing `ADMIN_TOKEN` secret remains present, and the successful V11 deployment is active. This patch leaves `wrangler.jsonc` and the secret unchanged. Do not put the token in GitHub or regenerate it for this upgrade.
+5. In **Workers & Pages → growloacl-os**, verify the `DB` binding still targets `growlocal-leads`, the existing `ADMIN_TOKEN` and `TURNSTILE_SECRET` secrets remain present, and the successful V11 deployment is active. Never put either secret in GitHub or source files.
 6. Hard-refresh `/admin/`, enter the existing token, and open a test lead. Set a stage, £1,000 setup, £200 monthly and 50% probability: weighted value should be £1,700. Save and refresh. Tick qualification items, set a deadline, add audit findings and commercial terms, generate/download a proposal, then verify the public audit form still accepts a test request. A signed-out request to `/api/admin/leads` or `/api/admin/summary` must return 401; `GET /api/audit-request` remains 405.
 
 ### SQL — V10 to V11, run once

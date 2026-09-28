@@ -1,4 +1,6 @@
-# V11 admin API
+# V11 API and security
+
+The public `POST /api/audit-request` route accepts only same-origin browser requests and enforces the managed Turnstile challenge when `TURNSTILE_SECRET` is configured. The Worker validates the token server-side, checks the `audit` action and current hostname, and rejects expired, replayed or forged tokens before writing to D1. Keep the secret in Cloudflare Worker secrets; never send it from the browser or include it in a URL.
 
 All endpoints below require the existing ADMIN_TOKEN in the Authorization Bearer header. Never include it in a URL.
 
