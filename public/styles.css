@@ -636,6 +636,53 @@ h1 {
 }
 
 /* ==========================================================================
+   GrowLocal Difference / USP
+   ========================================================================== */
+.difference-section {
+  padding-top: 72px;
+}
+
+.difference-grid .difference-card {
+  min-height: 248px;
+}
+
+.difference-card .num {
+  max-width: 100%;
+}
+
+.usp-callout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-top: 24px;
+  padding: 24px 28px;
+  border: 1px solid #c3d0b8;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(110deg, #e5e9dc, #eef1e7);
+}
+
+.usp-callout .kicker {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.usp-callout strong {
+  display: block;
+  max-width: 620px;
+  color: var(--text-pure);
+  font-family: var(--font-serif);
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 500;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+
+.usp-callout .secondary-link {
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
    Sections & Grids
    ========================================================================== */
 .section {
@@ -1328,6 +1375,12 @@ input:focus, textarea:focus, select:focus {
     padding: 24px 20px;
     grid-template-columns: 1fr;
     gap: 22px;
+  }
+  .usp-callout {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    padding: 22px 20px;
   }
   .logos-inner {
     gap: 14px;

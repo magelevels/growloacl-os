@@ -55,6 +55,12 @@
 
 # GrowLocal OS Changelog
 
+## Growth loop positioning (2026-09-28)
+
+- Added a public GrowLocal difference section: every recommendation moves from signal to owner, deadline and proof.
+- Added an admin momentum check that shows what share of open leads has a scheduled next move and links directly to unscheduled follow-ups.
+- Positioned GrowLocal around a simple promise: from first search to repeat visit, one measurable next move.
+
 ## V7
 - Added floating Launch Toolkit for demos and launch-readiness tracking.
 - Added fast demo workspace loader.

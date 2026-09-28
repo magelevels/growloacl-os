@@ -11,9 +11,22 @@ test('admin workspace exposes accessible results, errors and tab semantics', () 
   assert.match(page, /id="errorBox"[^>]*role="alert"[^>]*aria-live="assertive"/);
   assert.match(page, /id="leadList"[^>]*aria-label="Lead inbox results"/);
   assert.match(page, /id="detailPanel"[^>]*aria-label="Lead details"/);
+  assert.match(page, /id="momentumCallout"[^>]*aria-live="polite"/);
   assert.equal((script.match(/role="tab"/g) || []).length, 3);
   assert.equal((script.match(/aria-selected="false" tabindex="-1"/g) || []).length, 3);
   assert.equal((script.match(/role="tabpanel"[^>]*tabindex="0"/g) || []).length, 3);
+  assert.match(script, /MOMENTUM CHECK/);
+  assert.match(script, /Review unscheduled leads/);
+});
+
+test('public homepage states the GrowLocal difference clearly', () => {
+  const page = read('public/index.html');
+  assert.match(page, /id="difference"/);
+  assert.match(page, /Every recommendation ends with a next move/);
+  assert.match(page, /one measurable next move/);
+  assert.match(page, /SPOT THE SIGNAL/);
+  assert.match(page, /NAME THE MOVE/);
+  assert.match(page, /PROVE THE PROGRESS/);
 });
 
 test('public homepage includes a safe, accessible entry transition', () => {

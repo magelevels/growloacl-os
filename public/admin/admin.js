@@ -8,7 +8,7 @@ function esc(value = "") { return String(value ?? "").replace(/[&<>"']/g, m => (
 function dateLabel(v) { if (!v) return "—"; try { return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium", timeStyle: "short" }).format(new Date(v)); } catch { return esc(v); } }
 function ageLabel(v) { const time = new Date(v || "").getTime(); if (!Number.isFinite(time)) return ""; const days = Math.max(0, Math.floor((Date.now() - time) / 86400000)); return days === 0 ? "Today" : days === 1 ? "1 day old" : days < 30 ? `${days} days old` : `${Math.floor(days / 30)} mo old`; }
 function armIdleLock() { clearTimeout(idleTimer); if (!state.token || appPanel.hidden) return; idleTimer = setTimeout(() => lock("Locked after 30 minutes of inactivity. Sign in again to continue."), IDLE_LOCK_MS); }
-function lock(message = "") { clearTimeout(idleTimer); sessionStorage.removeItem("growlocal_admin_token"); state.token = ""; state.leads = []; state.selected = null; state.dirty = false; detailPanel.replaceChildren(); leadList.replaceChildren(); $("#stats").replaceChildren(); $("#pipeline").replaceChildren(); $("#focusViews").replaceChildren(); $("#tokenInput").value = ""; appPanel.hidden = true; loginPanel.hidden = false; $("#lockBtn").hidden = true; if (message) $("#loginMessage").textContent = message; }
+function lock(message = "") { clearTimeout(idleTimer); sessionStorage.removeItem("growlocal_admin_token"); state.token = ""; state.leads = []; state.selected = null; state.dirty = false; detailPanel.replaceChildren(); leadList.replaceChildren(); $("#stats").replaceChildren(); $("#pipeline").replaceChildren(); $("#focusViews").replaceChildren(); $("#momentumCallout").replaceChildren(); $("#momentumCallout").hidden = true; $("#tokenInput").value = ""; appPanel.hidden = true; loginPanel.hidden = false; $("#lockBtn").hidden = true; if (message) $("#loginMessage").textContent = message; }
 async function api(path, options = {}) {
   const res = await fetch(path, { ...options, headers: { "content-type": "application/json", authorization: `Bearer ${state.token}`, ...(options.headers || {}) } });
   const data = await res.json().catch(() => ({}));
@@ -32,6 +32,24 @@ function stats() {
     if (state.busy || !canLeave()) return;
     state.view = button.dataset.view; $("#statusFilter").value = ""; navigate(0, true);
   }));
+  renderMomentum();
+}
+function renderMomentum() {
+  const s = state.summary;
+  const total = Number(s.total) || 0;
+  const terminal = ["won", "lost", "archived"].reduce((sum, stage) => sum + (Number(s[`stage_${stage}`]) || 0), 0);
+  const open = Math.max(0, total - terminal);
+  const unscheduled = Number(s.unscheduled) || 0;
+  const coverage = open ? Math.max(0, Math.min(100, Math.round(((open - unscheduled) / open) * 100))) : 100;
+  const callout = $("#momentumCallout");
+  callout.hidden = false;
+  callout.innerHTML = `<div><p class="eyebrow">MOMENTUM CHECK</p><strong>${coverage}% of open leads have a next move</strong><p>${unscheduled ? `${unscheduled} open lead${unscheduled === 1 ? "" : "s"} still need a clear action or deadline.` : "Every open lead has a next action scheduled."}</p></div><button type="button" class="ghost" data-momentum-view="unscheduled">${unscheduled ? "Review unscheduled leads" : "Review follow-ups"} →</button>`;
+  callout.querySelector("button").addEventListener("click", () => {
+    if (state.busy || !canLeave()) return;
+    state.view = unscheduled ? "unscheduled" : "all";
+    $("#statusFilter").value = "";
+    navigate(0, true);
+  });
 }
 function overdue(l) { return !["won", "lost", "archived"].includes(l.status) && l.next_action_date && l.next_action_date < new Date().toISOString().slice(0, 10); }
 function renderList() {
