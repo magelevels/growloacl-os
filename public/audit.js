@@ -15,6 +15,7 @@ form?.addEventListener("submit", async (event) => {
   const button = form.querySelector("button[type='submit']");
   const data = Object.fromEntries(new FormData(form));
   data.consent = form.elements.consent.checked;
+  data.turnstileToken = form.elements["cf-turnstile-response"]?.value || "";
   button.disabled = true;
   button.textContent = "Saving your request…";
   try {

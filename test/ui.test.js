@@ -44,7 +44,12 @@ test('public assets enforce a strict script policy without inline handlers', () 
   assert.match(headers, /Origin-Agent-Cluster: \?1/);
   assert.match(headers, /X-DNS-Prefetch-Control: off/);
   assert.match(headers, /X-Permitted-Cross-Domain-Policies: none/);
+  assert.match(headers, /script-src 'self' https:\/\/challenges\.cloudflare\.com/);
+  assert.match(headers, /connect-src 'self' https:\/\/challenges\.cloudflare\.com/);
+  assert.match(headers, /frame-src https:\/\/challenges\.cloudflare\.com/);
   assert.match(page, /<script src="\/js-flag\.js"><\/script>/);
+  assert.match(page, /src="https:\/\/challenges\.cloudflare\.com\/turnstile\/v0\/api\.js"/);
+  assert.match(page, /class="cf-turnstile"[^>]*data-action="audit"/);
   assert.doesNotMatch(page, /<script>[^<]/);
   assert.match(flag, /document\.documentElement\.classList\.add\("js"\)/);
   assert.match(demo, /id="printReportBtn"/);

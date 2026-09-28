@@ -5,6 +5,7 @@
 - Applied matching security headers to JSON API responses and covered the hardening with regression tests.
 - Rejected oversized admin bearer headers before cryptographic comparison to limit abusive requests.
 - Rejected cross-site API calls using Origin and Fetch Metadata checks before public submissions or admin actions reach application logic.
+- Added a managed Cloudflare Turnstile challenge to the public audit form, with fail-closed server-side token, action and hostname validation plus a five-second verification timeout.
 
 ## V11 admin safety update (2026-09-23)
 

@@ -1110,6 +1110,11 @@ input:focus, textarea:focus, select:focus {
   overflow: hidden !important;
 }
 
+.turnstile-wrap {
+  min-height: 65px;
+  margin: 6px 0 16px;
+}
+
 /* Success State */
 .success-state {
   text-align: center;

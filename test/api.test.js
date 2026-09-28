@@ -77,6 +77,31 @@ test("rejects fetch metadata that identifies a cross-site request", async () => 
   assert.equal(response.status, 403);
 });
 
+test("requires Turnstile when the production secret is configured", async () => {
+  const response = await worker.fetch(request("POST", payload), { ...envWithDb(), TURNSTILE_SECRET: "test-secret" });
+  assert.equal(response.status, 403);
+  assert.equal((await response.json()).error, "Please complete the security check and try again.");
+});
+
+test("validates Turnstile server-side before creating a lead", async () => {
+  const originalFetch = globalThis.fetch;
+  let verification;
+  globalThis.fetch = async (input, init) => {
+    verification = { input, init };
+    return new Response(JSON.stringify({ success: true, action: "audit", hostname: "example.test" }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    const calls = [];
+    const response = await worker.fetch(request("POST", { ...payload, turnstileToken: "token" }), { ...envWithDb(calls), TURNSTILE_SECRET: "test-secret" });
+    assert.equal(response.status, 201);
+    assert.equal(verification.input, "https://challenges.cloudflare.com/turnstile/v0/siteverify");
+    assert.deepEqual(JSON.parse(verification.init.body), { secret: "test-secret", response: "token" });
+    assert.equal(calls.length, 1);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("rejects malformed and oversized bodies", async () => {
   const malformed = await worker.fetch(request("POST", "{"), envWithDb());
   assert.equal(malformed.status, 400);

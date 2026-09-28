@@ -15,6 +15,7 @@ const JSON_HEADERS = {
   "x-permitted-cross-domain-policies": "none",
 };
 const MAX_BODY_BYTES = 12_000;
+const MAX_TURNSTILE_TOKEN_BYTES = 2_048;
 const LEAD_STATUSES = new Set(STAGES);
 
 function json(body, status = 200, extraHeaders = {}) {
@@ -93,6 +94,32 @@ async function requireAdmin(request, env) {
   return null;
 }
 
+async function verifyTurnstile(request, token, secret) {
+  if (typeof token !== "string" || !token || token.length > MAX_TURNSTILE_TOKEN_BYTES) return false;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5_000);
+  try {
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "content-type": "application/json", accept: "application/json" },
+      body: JSON.stringify({
+        secret,
+        response: token,
+        remoteip: request.headers.get("cf-connecting-ip") || undefined,
+      }),
+      signal: controller.signal,
+    });
+    if (!response.ok) return false;
+    const result = await response.json().catch(() => null);
+    const hostname = new URL(request.url).hostname;
+    return result?.success === true && result.action === "audit" && result.hostname === hostname;
+  } catch {
+    return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function createAuditRequest(request, env) {
   const contentType = request.headers.get("content-type") || "";
   if (!contentType.toLowerCase().startsWith("application/json")) return json({ error: "Send this form as JSON." }, 415);
@@ -107,6 +134,10 @@ async function createAuditRequest(request, env) {
     return json({ error: "Invalid JSON." }, 400);
   }
   if (body && body.companyWebsite) return json({ ok: true }, 201);
+
+  if (env.TURNSTILE_SECRET && !(await verifyTurnstile(request, body?.turnstileToken, env.TURNSTILE_SECRET))) {
+    return json({ error: "Please complete the security check and try again." }, 403);
+  }
 
   const result = validateAuditRequest(body);
   if (!result.ok) return json({ error: "Please check the highlighted fields.", fields: result.errors }, 422);

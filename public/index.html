@@ -312,6 +312,9 @@
             <label class="honeypot" aria-hidden="true">Company website
               <input name="companyWebsite" tabindex="-1" autocomplete="off">
             </label>
+            <div class="turnstile-wrap" aria-label="Security verification">
+              <div class="cf-turnstile" data-sitekey="0x4AAAAAAFH59ClzwL05nnyO" data-action="audit"></div>
+            </div>
             <label class="consent">
               <input name="consent" type="checkbox" required>
               <span>I agree that GrowLocal may use these details to review my business and contact me about this audit. I understand I can ask for my information to be deleted. See the <a href="/privacy/" target="_blank" rel="noopener">privacy notice</a>.</span>
@@ -349,6 +352,7 @@
       <span>© 2026 GrowLocal</span>
     </div>
   </footer>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   <script src="/audit.js" defer></script>
   <script src="/motion.js" defer></script>
   <script src="/loader.js" defer></script>
