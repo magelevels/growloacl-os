@@ -28,3 +28,21 @@ test('public homepage includes a safe, accessible entry transition', () => {
   assert.match(loader, /3200/);
   assert.match(loader, /aria-hidden/);
 });
+
+test('public assets enforce a strict script policy without inline handlers', () => {
+  const headers = read('public/_headers');
+  const page = read('public/index.html');
+  const flag = read('public/js-flag.js');
+  const demo = read('public/app/index.html');
+  const app = read('public/app/app.js');
+
+  assert.match(headers, /Content-Security-Policy: default-src 'self';/);
+  assert.match(headers, /Strict-Transport-Security: max-age=31536000; includeSubDomains/);
+  assert.match(headers, /Cross-Origin-Resource-Policy: same-origin/);
+  assert.match(page, /<script src="\/js-flag\.js"><\/script>/);
+  assert.doesNotMatch(page, /<script>[^<]/);
+  assert.match(flag, /document\.documentElement\.classList\.add\("js"\)/);
+  assert.match(demo, /id="printReportBtn"/);
+  assert.doesNotMatch(demo, /onclick="/);
+  assert.match(app, /#printReportBtn.*window\.print/);
+});

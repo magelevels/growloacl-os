@@ -48,6 +48,10 @@ test("creates a lead through the POST-only route", async () => {
   assert.equal(calls.length, 1);
   assert.equal(calls[0].values[2], "test@example.com");
   assert.equal(response.headers.get("cache-control"), "no-store");
+  assert.equal(response.headers.get("x-frame-options"), "DENY");
+  assert.equal(response.headers.get("cross-origin-resource-policy"), "same-origin");
+  assert.equal(response.headers.get("permissions-policy"), "camera=(), microphone=(), geolocation=()");
+  assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000; includeSubDomains");
 });
 
 test("does not expose leads through GET", async () => {

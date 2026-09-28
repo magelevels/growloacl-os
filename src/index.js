@@ -6,6 +6,10 @@ const JSON_HEADERS = {
   "cache-control": "no-store",
   "x-content-type-options": "nosniff",
   "referrer-policy": "no-referrer",
+  "x-frame-options": "DENY",
+  "cross-origin-resource-policy": "same-origin",
+  "permissions-policy": "camera=(), microphone=(), geolocation=()",
+  "strict-transport-security": "max-age=31536000; includeSubDomains",
 };
 const MAX_BODY_BYTES = 12_000;
 const LEAD_STATUSES = new Set(STAGES);
