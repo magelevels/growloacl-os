@@ -38,6 +38,19 @@ function envWithDb(calls = []) {
   };
 }
 
+function rateLimiter({ success = true, calls = [] } = {}) {
+  return {
+    async limit(options) {
+      calls.push(options);
+      return { success };
+    },
+  };
+}
+
+function failingRateLimiter() {
+  return { async limit() { throw new Error("binding unavailable"); } };
+}
+
 test("creates a lead through the POST-only route", async () => {
   const calls = [];
   const response = await worker.fetch(request("POST", payload), envWithDb(calls));
@@ -61,6 +74,27 @@ test("does not expose leads through GET", async () => {
   const response = await worker.fetch(request("GET"), envWithDb());
   assert.equal(response.status, 405);
   assert.equal(response.headers.get("allow"), "POST");
+});
+
+test("rate-limits public audit submissions before reading the body", async () => {
+  const calls = [];
+  const response = await worker.fetch(request("POST", payload), { ...envWithDb(), AUDIT_RATE_LIMITER: rateLimiter({ success: false, calls }) });
+  assert.equal(response.status, 429);
+  assert.equal(response.headers.get("retry-after"), "60");
+  assert.deepEqual(calls, [{ key: "/api/audit-request:unknown" }]);
+});
+
+test("rate-limits admin routes before authentication", async () => {
+  const calls = [];
+  const response = await worker.fetch(new Request("https://example.test/api/admin/leads"), { ...envWithDb(), ADMIN_RATE_LIMITER: rateLimiter({ success: false, calls }) });
+  assert.equal(response.status, 429);
+  assert.deepEqual(calls, [{ key: "/api/admin:unknown" }]);
+});
+
+test("fails closed when Cloudflare cannot answer the rate-limit check", async () => {
+  const response = await worker.fetch(request("POST", payload), { ...envWithDb(), AUDIT_RATE_LIMITER: failingRateLimiter() });
+  assert.equal(response.status, 503);
+  assert.equal(response.headers.get("retry-after"), "60");
 });
 
 test("rejects cross-origin audit submissions before writing", async () => {

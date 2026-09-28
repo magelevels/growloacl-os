@@ -1,6 +1,8 @@
 # V11 API and security
 
-The public `POST /api/audit-request` route accepts only same-origin browser requests and enforces the managed Turnstile challenge when `TURNSTILE_SECRET` is configured. The Worker validates the token server-side, checks the `audit` action and current hostname, and rejects expired, replayed or forged tokens before writing to D1. Keep the secret in Cloudflare Worker secrets; never send it from the browser or include it in a URL.
+The public `POST /api/audit-request` route accepts only same-origin browser requests and enforces the managed Turnstile challenge when `TURNSTILE_SECRET` is configured. The Worker validates the token server-side, checks the `audit` action and current hostname, and rejects expired, replayed or forged tokens before writing to D1. A native Cloudflare Worker Rate Limiting binding allows five audit attempts per minute per edge IP; over-limit responses return `429` and `Retry-After: 60`. Keep the secret in Cloudflare Worker secrets; never send it from the browser or include it in a URL.
+
+All `/api/admin/*` routes require the bearer token and are rate limited to 120 requests per minute per edge IP before authentication or D1 work. The rate limit bindings are local to the Cloudflare location serving the request and intentionally fail closed with `503` if the abuse-control check is unavailable.
 
 All endpoints below require the existing ADMIN_TOKEN in the Authorization Bearer header. Never include it in a URL.
 

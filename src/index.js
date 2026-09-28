@@ -17,6 +17,7 @@ const JSON_HEADERS = {
 const MAX_BODY_BYTES = 12_000;
 const MAX_TURNSTILE_TOKEN_BYTES = 2_048;
 const LEAD_STATUSES = new Set(STAGES);
+const RATE_LIMIT_RETRY_AFTER_SECONDS = 60;
 
 function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), { status, headers: { ...JSON_HEADERS, ...extraHeaders } });
@@ -37,6 +38,33 @@ function requestOriginAllowed(request) {
 
 function isProtectedApiPath(pathname) {
   return pathname === "/api/audit-request" || pathname === "/api/admin" || pathname.startsWith("/api/admin/");
+}
+
+async function enforceRateLimit(request, env, pathname) {
+  const limiter = pathname === "/api/audit-request" ? env.AUDIT_RATE_LIMITER : env.ADMIN_RATE_LIMITER;
+  if (!limiter) return null;
+
+  // Cloudflare supplies this header at the edge. Never fall back to a
+  // client-controlled forwarding header for the abuse-control key.
+  const ip = request.headers.get("cf-connecting-ip") || "unknown";
+  const key = `${pathname}:${ip}`;
+  try {
+    const result = await limiter.limit({ key });
+    if (result?.success !== false) return null;
+  } catch (error) {
+    // Fail closed if Cloudflare cannot answer the abuse-control check. This
+    // protects the write and admin surfaces during a binding incident rather
+    // than silently bypassing the control.
+    console.error(JSON.stringify({ event: "rate_limit_check_failed", path: pathname, message: error instanceof Error ? error.message : "unknown" }));
+    return json({ error: "Security controls are temporarily unavailable. Please try again shortly." }, 503, {
+      "retry-after": String(RATE_LIMIT_RETRY_AFTER_SECONDS),
+      "vary": "Origin, Sec-Fetch-Site",
+    });
+  }
+  return json({ error: "Too many requests. Please try again shortly." }, 429, {
+    "retry-after": String(RATE_LIMIT_RETRY_AFTER_SECONDS),
+    "vary": "Origin, Sec-Fetch-Site",
+  });
 }
 
 async function readJson(request, maxBytes = MAX_BODY_BYTES) {
@@ -276,6 +304,10 @@ export default {
     const url = new URL(request.url);
     if (isProtectedApiPath(url.pathname) && !requestOriginAllowed(request)) {
       return json({ error: "Cross-site requests are not allowed." }, 403, { vary: "Origin, Sec-Fetch-Site" });
+    }
+    if (isProtectedApiPath(url.pathname)) {
+      const limited = await enforceRateLimit(request, env, url.pathname === "/api/audit-request" ? url.pathname : "/api/admin");
+      if (limited) return limited;
     }
     if (url.pathname === "/api/admin" || url.pathname.startsWith("/api/admin/")) {
       const denied = await requireAdmin(request, env);

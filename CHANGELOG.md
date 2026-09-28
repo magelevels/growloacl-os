@@ -1,5 +1,6 @@
 ## V11 security hardening (2026-09-28)
 
+- Added native Cloudflare Worker Rate Limiting bindings for public audit submissions (5 requests per minute per edge IP) and admin API access (120 requests per minute per edge IP), returning `429` with `Retry-After` before expensive validation or database work.
 - Added a strict same-origin Content Security Policy and removed remaining inline JavaScript, inline styles and event attributes from shipped pages.
 - Added HSTS, cross-origin resource isolation, framing protection, permissions restrictions, browser isolation headers and no-store handling for admin assets.
 - Applied matching security headers to JSON API responses and covered the hardening with regression tests.

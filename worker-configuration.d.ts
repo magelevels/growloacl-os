@@ -3,6 +3,8 @@
 // Runtime types generated with workerd@1.20260831.1 2026-09-04 nodejs_compat
 interface __BaseEnv_Env {
 	DB: D1Database;
+	AUDIT_RATE_LIMITER: RateLimit;
+	ADMIN_RATE_LIMITER: RateLimit;
 	ASSETS: Fetcher;
 }
 declare namespace Cloudflare {
