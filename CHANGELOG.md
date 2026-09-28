@@ -6,6 +6,8 @@
 - Rejected oversized admin bearer headers before cryptographic comparison to limit abusive requests.
 - Rejected cross-site API calls using Origin and Fetch Metadata checks before public submissions or admin actions reach application logic.
 - Added a managed Cloudflare Turnstile challenge to the public audit form, with fail-closed server-side token, action and hostname validation plus a five-second verification timeout.
+- Updated the Wrangler toolchain to a patched release and verified the dependency tree has no known vulnerabilities.
+- Tightened static-page policy with no-referrer handling, legacy download protection and explicit blocking of inline script/style attributes, manifests and media.
 
 ## V11 admin safety update (2026-09-23)
 

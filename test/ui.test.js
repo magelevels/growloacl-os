@@ -38,6 +38,10 @@ test('public assets enforce a strict script policy without inline handlers', () 
 
   assert.match(headers, /Content-Security-Policy: default-src 'self';/);
   assert.doesNotMatch(headers, /style-src[^\n]*unsafe-inline/);
+  assert.match(headers, /Referrer-Policy: no-referrer/);
+  assert.match(headers, /X-Download-Options: noopen/);
+  assert.match(headers, /script-src-attr 'none'/);
+  assert.match(headers, /style-src-attr 'none'/);
   assert.match(headers, /frame-ancestors 'none'/);
   assert.match(headers, /Strict-Transport-Security: max-age=31536000; includeSubDomains/);
   assert.match(headers, /Cross-Origin-Resource-Policy: same-origin/);
