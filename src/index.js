@@ -21,6 +21,23 @@ function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), { status, headers: { ...JSON_HEADERS, ...extraHeaders } });
 }
 
+function requestOriginAllowed(request) {
+  const fetchSite = (request.headers.get("sec-fetch-site") || "").toLowerCase();
+  if (fetchSite === "cross-site") return false;
+
+  const origin = request.headers.get("origin");
+  if (!origin) return true;
+  try {
+    return origin === new URL(request.url).origin;
+  } catch {
+    return false;
+  }
+}
+
+function isProtectedApiPath(pathname) {
+  return pathname === "/api/audit-request" || pathname === "/api/admin" || pathname.startsWith("/api/admin/");
+}
+
 async function readJson(request, maxBytes = MAX_BODY_BYTES) {
   if (!request.body) throw new SyntaxError("Missing body");
   const reader = request.body.getReader();
@@ -226,6 +243,9 @@ async function salesSummary(env) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (isProtectedApiPath(url.pathname) && !requestOriginAllowed(request)) {
+      return json({ error: "Cross-site requests are not allowed." }, 403, { vary: "Origin, Sec-Fetch-Site" });
+    }
     if (url.pathname === "/api/admin" || url.pathname.startsWith("/api/admin/")) {
       const denied = await requireAdmin(request, env);
       if (denied) return denied;

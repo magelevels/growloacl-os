@@ -4,6 +4,7 @@
 - Added HSTS, cross-origin resource isolation, framing protection, permissions restrictions, browser isolation headers and no-store handling for admin assets.
 - Applied matching security headers to JSON API responses and covered the hardening with regression tests.
 - Rejected oversized admin bearer headers before cryptographic comparison to limit abusive requests.
+- Rejected cross-site API calls using Origin and Fetch Metadata checks before public submissions or admin actions reach application logic.
 
 ## V11 admin safety update (2026-09-23)
 

@@ -63,6 +63,20 @@ test("does not expose leads through GET", async () => {
   assert.equal(response.headers.get("allow"), "POST");
 });
 
+test("rejects cross-origin audit submissions before writing", async () => {
+  const calls = [];
+  const response = await worker.fetch(request("POST", payload, { origin: "https://evil.example" }), envWithDb(calls));
+  assert.equal(response.status, 403);
+  assert.equal((await response.json()).error, "Cross-site requests are not allowed.");
+  assert.equal(response.headers.get("vary"), "Origin, Sec-Fetch-Site");
+  assert.equal(calls.length, 0);
+});
+
+test("rejects fetch metadata that identifies a cross-site request", async () => {
+  const response = await worker.fetch(request("GET", undefined, { "sec-fetch-site": "cross-site" }), envWithDb());
+  assert.equal(response.status, 403);
+});
+
 test("rejects malformed and oversized bodies", async () => {
   const malformed = await worker.fetch(request("POST", "{"), envWithDb());
   assert.equal(malformed.status, 400);
