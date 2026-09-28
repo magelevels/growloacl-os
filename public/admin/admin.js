@@ -105,7 +105,7 @@ function updateCalculations() {
   $("#advanceBtn").textContent = next ? `Move to ${next.replaceAll('_', ' ')} →` : '';
   const checks = proposalReadiness(formLead(state.leads.find(l => l.id === state.selected)));
   const ready = checks.filter(([, done]) => done).length;
-  $("#proposalReadiness").innerHTML = `<div class="section-heading"><strong>Ready to propose?</strong><span>${ready}/${checks.length} prepared</span></div><div class="readiness-track"><span style="width:${ready / checks.length * 100}%"></span></div><div class="readiness-items">${checks.map(([label, done]) => `<span class="${done ? 'complete' : ''}">${done ? '✓' : '○'} ${label}</span>`).join('')}</div><p class="lead-meta">A preparation guide. Review the final draft before sharing.</p>`;
+  $("#proposalReadiness").innerHTML = `<div class="section-heading"><strong>Ready to propose?</strong><span>${ready}/${checks.length} prepared</span></div><div class="readiness-track"><span class="readiness-progress progress-${ready}"></span></div><div class="readiness-items">${checks.map(([label, done]) => `<span class="${done ? 'complete' : ''}">${done ? '✓' : '○'} ${label}</span>`).join('')}</div><p class="lead-meta">A preparation guide. Review the final draft before sharing.</p>`;
   const fixed = ["won", "lost", "archived"].includes(stage);
   $("#editProbability").disabled = fixed;
   const probability = fixed ? (stage === "won" ? 100 : 0) : Number($("#editProbability").value);

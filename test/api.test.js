@@ -52,6 +52,9 @@ test("creates a lead through the POST-only route", async () => {
   assert.equal(response.headers.get("cross-origin-resource-policy"), "same-origin");
   assert.equal(response.headers.get("permissions-policy"), "camera=(), microphone=(), geolocation=()");
   assert.equal(response.headers.get("strict-transport-security"), "max-age=31536000; includeSubDomains");
+  assert.equal(response.headers.get("origin-agent-cluster"), "?1");
+  assert.equal(response.headers.get("x-dns-prefetch-control"), "off");
+  assert.equal(response.headers.get("x-permitted-cross-domain-policies"), "none");
 });
 
 test("does not expose leads through GET", async () => {

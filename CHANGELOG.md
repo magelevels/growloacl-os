@@ -1,8 +1,9 @@
 ## V11 security hardening (2026-09-28)
 
-- Added a strict same-origin Content Security Policy and removed the remaining inline JavaScript from the public and demo pages.
-- Added HSTS, cross-origin resource isolation, framing protection, permissions restrictions and no-store handling for admin assets.
+- Added a strict same-origin Content Security Policy and removed remaining inline JavaScript, inline styles and event attributes from shipped pages.
+- Added HSTS, cross-origin resource isolation, framing protection, permissions restrictions, browser isolation headers and no-store handling for admin assets.
 - Applied matching security headers to JSON API responses and covered the hardening with regression tests.
+- Rejected oversized admin bearer headers before cryptographic comparison to limit abusive requests.
 
 ## V11 admin safety update (2026-09-23)
 

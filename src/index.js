@@ -10,6 +10,9 @@ const JSON_HEADERS = {
   "cross-origin-resource-policy": "same-origin",
   "permissions-policy": "camera=(), microphone=(), geolocation=()",
   "strict-transport-security": "max-age=31536000; includeSubDomains",
+  "origin-agent-cluster": "?1",
+  "x-dns-prefetch-control": "off",
+  "x-permitted-cross-domain-policies": "none",
 };
 const MAX_BODY_BYTES = 12_000;
 const LEAD_STATUSES = new Set(STAGES);
@@ -66,6 +69,7 @@ async function requireAdmin(request, env) {
   if (!env.ADMIN_TOKEN) return json({ error: "Admin access is not configured." }, 503);
   const auth = request.headers.get("authorization") || "";
   const supplied = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+  if (supplied.length > 256) return json({ error: "Unauthorized." }, 401, { "www-authenticate": "Bearer" });
   if (!(await tokensMatch(supplied, env.ADMIN_TOKEN))) {
     return json({ error: "Unauthorized." }, 401, { "www-authenticate": "Bearer" });
   }

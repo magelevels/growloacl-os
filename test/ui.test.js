@@ -37,12 +37,27 @@ test('public assets enforce a strict script policy without inline handlers', () 
   const app = read('public/app/app.js');
 
   assert.match(headers, /Content-Security-Policy: default-src 'self';/);
+  assert.doesNotMatch(headers, /style-src[^\n]*unsafe-inline/);
+  assert.match(headers, /frame-ancestors 'none'/);
   assert.match(headers, /Strict-Transport-Security: max-age=31536000; includeSubDomains/);
   assert.match(headers, /Cross-Origin-Resource-Policy: same-origin/);
+  assert.match(headers, /Origin-Agent-Cluster: \?1/);
+  assert.match(headers, /X-DNS-Prefetch-Control: off/);
+  assert.match(headers, /X-Permitted-Cross-Domain-Policies: none/);
   assert.match(page, /<script src="\/js-flag\.js"><\/script>/);
   assert.doesNotMatch(page, /<script>[^<]/);
   assert.match(flag, /document\.documentElement\.classList\.add\("js"\)/);
   assert.match(demo, /id="printReportBtn"/);
   assert.doesNotMatch(demo, /onclick="/);
+  assert.doesNotMatch(demo, /style="/);
   assert.match(app, /#printReportBtn.*window\.print/);
+});
+
+test('all shipped HTML and scripts avoid inline style and event attributes', () => {
+  for (const path of ['public/index.html', 'public/404.html', 'public/app/index.html', 'public/admin/index.html', 'public/privacy/index.html', 'public/terms/index.html']) {
+    assert.doesNotMatch(read(path), /\sstyle="/);
+  }
+  for (const path of ['public/app/app.js', 'public/admin/admin.js']) {
+    assert.doesNotMatch(read(path), /\sstyle="/);
+  }
 });
