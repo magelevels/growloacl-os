@@ -2,6 +2,16 @@ export const STAGES = ["new", "contacted", "qualified", "audit_ready", "proposal
 export const QUALIFICATION = ["business_fit", "need_confirmed", "decision_maker", "budget_confirmed", "timing_confirmed"];
 export const STAGE_SQL = "COALESCE(pipeline_stage, CASE WHEN status = 'closed' THEN 'archived' ELSE status END)";
 export const SALES_COLUMNS = "pipeline_stage, setup_fee, monthly_value, probability, next_action_date, qualification, prospect_notes, audit_findings, audit_recommendations, proposal_status, proposal_scope, proposal_terms, proposal_valid_until";
+const STAGE_NEXT_MOVES = {
+  new: "Book a discovery call",
+  contacted: "Confirm the growth challenge",
+  qualified: "Complete the audit and fit review",
+  audit_ready: "Prepare a focused proposal",
+  proposal_sent: "Follow up on the proposal",
+  won: "Schedule onboarding",
+  lost: "Record the loss reason",
+  archived: "Review the archived outcome",
+};
 const fields = {
   status: ["pipeline_stage", STAGES], priority: ["priority", ["low", "normal", "high"]],
   notes: ["notes", 4000], nextAction: ["next_action", 500],
@@ -45,12 +55,17 @@ export function validateLeadUpdate(body) {
   }
   return { data };
 }
+export function recommendedNextMove(row, status = row.pipeline_stage || (row.status === "closed" ? "archived" : row.status)) {
+  if (!String(row.next_action || "").trim()) return STAGE_NEXT_MOVES[status] || "Review the lead and choose one next move";
+  if (!row.next_action_date) return "Set a deadline for the current next action";
+  return null;
+}
 export function enrichLead(row) {
   let checklist;
   try { checklist = JSON.parse(row.qualification || "[]"); } catch { checklist = []; }
   checklist = Array.isArray(checklist) ? [...new Set(checklist.filter(x => QUALIFICATION.includes(x)))] : [];
   const status = row.pipeline_stage || (row.status === "closed" ? "archived" : row.status);
   const probability = status === "won" ? 100 : ["lost", "archived"].includes(status) ? 0 : row.probability || 0;
-  return { ...row, legacy_status: row.status, status, probability, qualification: checklist, qualification_score: checklist.length * 20,
+  return { ...row, legacy_status: row.status, status, probability, qualification: checklist, qualification_score: checklist.length * 20, recommended_next_move: recommendedNextMove(row, status),
     expected_value: Math.round(((row.setup_fee || 0) + 12 * (row.monthly_value || 0)) * probability) / 100 };
 }

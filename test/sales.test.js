@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import worker from '../src/index.js';
-import { STAGES, validateLeadUpdate, enrichLead } from '../src/sales.js';
+import { STAGES, validateLeadUpdate, enrichLead, recommendedNextMove } from '../src/sales.js';
 import { proposalText, csvCell, leadsCsv } from '../public/admin/proposal.js';
 
 const id = '11111111-1111-4111-8111-111111111111';
@@ -209,6 +209,14 @@ test('qualification and terminal probability are derived defensively', () => {
   }
   assert.equal(enrichLead({ status:'closed', pipeline_stage:'won', setup_fee:100, probability:0 }).expected_value,100);
   assert.equal(enrichLead({ status:'closed', pipeline_stage:'lost', setup_fee:100, probability:100 }).expected_value,0);
+});
+
+test('derived next moves make follow-up gaps actionable without changing stored data', () => {
+  assert.equal(recommendedNextMove({ status: 'new' }), 'Book a discovery call');
+  assert.equal(recommendedNextMove({ pipeline_stage: 'audit_ready' }), 'Prepare a focused proposal');
+  assert.equal(recommendedNextMove({ status: 'contacted', next_action: 'Call the owner' }), 'Set a deadline for the current next action');
+  assert.equal(recommendedNextMove({ status: 'contacted', next_action: 'Call the owner', next_action_date: '2026-10-01' }), null);
+  assert.equal(enrichLead({ status: 'new', qualification: '[]' }).recommended_next_move, 'Book a discovery call');
 });
 
 test('follow-up views use the full database and exclude terminal leads', async () => {

@@ -17,6 +17,8 @@ test('admin workspace exposes accessible results, errors and tab semantics', () 
   assert.equal((script.match(/role="tabpanel"[^>]*tabindex="0"/g) || []).length, 3);
   assert.match(script, /MOMENTUM CHECK/);
   assert.match(script, /Review unscheduled leads/);
+  assert.match(script, /recommended_next_move/);
+  assert.match(script, /id="useSuggestedMove"/);
 });
 
 test('public homepage states the GrowLocal difference clearly', () => {

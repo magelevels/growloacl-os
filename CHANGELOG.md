@@ -10,6 +10,12 @@
 - Updated the Wrangler toolchain to a patched release and verified the dependency tree has no known vulnerabilities.
 - Tightened static-page policy with no-referrer handling, legacy download protection and explicit blocking of inline script/style attributes, manifests and media.
 
+## Competitive landscape and next-move engine (2026-09-29)
+
+- Added a 250-company competitive discovery set spanning local SEO, reputation, CRM, messaging, bookings, payments, commerce, content, analytics, advertising, loyalty and field-service workflows.
+- Added a research brief with market evidence, a differentiated GrowLocal positioning statement and a staged product roadmap in `docs/competitive-landscape-2026.md`.
+- Added derived next-move recommendations to the sales API and admin workspace. Operators can accept a stage-specific suggestion or schedule the deadline for an existing action without changing stored lead data until they save.
+
 ## V11 admin safety update (2026-09-23)
 
 - Added age indicators to the admin inbox so older enquiries are visible at a glance.
