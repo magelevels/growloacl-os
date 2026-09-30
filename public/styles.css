@@ -85,6 +85,16 @@ body {
   min-height: 100vh;
 }
 
+/* Keep the long landing page responsive while the visitor is still in the
+   hero. The browser can defer painting lower sections without removing them
+   from the document or changing anchor targets. */
+.section,
+.logos,
+.audit-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 720px;
+}
+
 /* A short brand-led entry transition. It is only enabled when JavaScript is
    available, so a blocked script can never hide the page content. */
 .site-loader {

@@ -60,6 +60,7 @@ test('public assets enforce a strict script policy without inline handlers', () 
   assert.match(headers, /frame-ancestors 'none'/);
   assert.match(headers, /Strict-Transport-Security: max-age=31536000; includeSubDomains/);
   assert.match(headers, /Cross-Origin-Resource-Policy: same-origin/);
+  assert.match(read('public/styles.css'), /content-visibility:\s*auto/);
   assert.match(headers, /Origin-Agent-Cluster: \?1/);
   assert.match(headers, /X-DNS-Prefetch-Control: off/);
   assert.match(headers, /X-Permitted-Cross-Domain-Policies: none/);
