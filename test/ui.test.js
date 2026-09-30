@@ -69,7 +69,8 @@ test('public assets enforce a strict script policy without inline handlers', () 
   assert.match(headers, /connect-src 'self' https:\/\/challenges\.cloudflare\.com/);
   assert.match(headers, /frame-src https:\/\/challenges\.cloudflare\.com/);
   assert.match(page, /<script src="\/js-flag\.js"><\/script>/);
-  assert.match(page, /src="https:\/\/challenges\.cloudflare\.com\/turnstile\/v0\/api\.js"/);
+  assert.match(page, /<script src="\/turnstile\.js" defer><\/script>/);
+  assert.match(read('public/turnstile.js'), /challenges\.cloudflare\.com\/turnstile\/v0\/api\.js/);
   assert.match(page, /class="cf-turnstile"[^>]*data-action="audit"/);
   assert.doesNotMatch(page, /<script>[^<]/);
   assert.match(flag, /document\.documentElement\.classList\.add\("js"\)/);

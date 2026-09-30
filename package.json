@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "check": "node --check src/index.js && node --check src/validation.js && node --check src/sales.js && node --check public/admin/admin.js && node --check public/admin/proposal.js && node --check public/audit.js && node --check public/app/app.js && node --check public/motion.js && node --test",
+    "check": "node --check src/index.js && node --check src/validation.js && node --check src/sales.js && node --check public/admin/admin.js && node --check public/admin/proposal.js && node --check public/audit.js && node --check public/app/app.js && node --check public/motion.js && node --check public/turnstile.js && node --test",
     "types": "wrangler types",
     "deploy:dry": "wrangler deploy --dry-run",
     "deploy": "wrangler deploy"
