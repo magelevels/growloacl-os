@@ -77,7 +77,11 @@ async function verify() {
 
 async function clientApi(path, options = {}) {
   if (!session?.access_token) throw new Error("Sign-in required.");
-  const send = () => fetch(path, { ...options, headers: { accept: "application/json", ...(options.body ? { "content-type": "application/json" } : {}), authorization: `Bearer ${session.access_token}`, ...(options.headers || {}) } });
+  const send = () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8_000);
+    return fetch(path, { ...options, headers: { accept: "application/json", ...(options.body ? { "content-type": "application/json" } : {}), authorization: `Bearer ${session.access_token}`, ...(options.headers || {}) }, signal: controller.signal }).finally(() => clearTimeout(timeout));
+  };
   let response = await send();
   if (response.status === 401 && await refresh()) response = await send();
   const body = await response.json().catch(() => null);
