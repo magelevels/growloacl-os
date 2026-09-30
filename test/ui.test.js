@@ -31,6 +31,18 @@ test('public homepage states the GrowLocal difference clearly', () => {
   assert.match(page, /PROVE THE PROGRESS/);
 });
 
+test('shared sign-in page separates client and admin workspaces', () => {
+  const page = read('public/login/index.html');
+  const styles = read('public/login/login.css');
+  assert.match(page, /id="login-title"/);
+  assert.match(page, /href="\/app\/"/);
+  assert.match(page, /href="\/admin\/"/);
+  assert.match(page, /Client workspace/);
+  assert.match(page, /Admin workspace/);
+  assert.match(styles, /login-option--client/);
+  assert.match(styles, /login-option--admin/);
+});
+
 test('public homepage includes a safe, accessible entry transition', () => {
   const page = read('public/index.html');
   const loader = read('public/loader.js');
