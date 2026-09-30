@@ -168,6 +168,28 @@ test("scopes client workspace reads and writes to the verified Supabase user", a
   }
 });
 
+test("uses the client rate limiter for authenticated workspace traffic", async () => {
+  const originalFetch = globalThis.fetch;
+  const clientCalls = [];
+  const adminCalls = [];
+  globalThis.fetch = async () => new Response(JSON.stringify({ id: "user-1", email: "client@example.com" }), { status: 200 });
+  try {
+    const response = await worker.fetch(authRequest("/api/client/workspace", "GET", { authorization: "Bearer access-token" }), {
+      SUPABASE_URL: "https://project.supabase.co",
+      SUPABASE_ANON_KEY: "anon-key",
+      DB: clientWorkspaceDb(),
+      CLIENT_RATE_LIMITER: rateLimiter({ calls: clientCalls }),
+      ADMIN_RATE_LIMITER: rateLimiter({ calls: adminCalls }),
+    });
+    assert.equal(response.status, 200);
+    assert.equal(clientCalls.length, 1);
+    assert.equal(adminCalls.length, 0);
+    assert.match(clientCalls[0].key, /^\/api\/client\/workspace:/);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
 test("fails closed when Cloudflare cannot answer the rate-limit check", async () => {
   const response = await worker.fetch(request("POST", payload), { ...envWithDb(), AUDIT_RATE_LIMITER: failingRateLimiter() });
   assert.equal(response.status, 503);

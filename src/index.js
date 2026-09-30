@@ -428,7 +428,8 @@ export default {
       return json({ error: "Cross-site requests are not allowed." }, 403, { vary: "Origin, Sec-Fetch-Site" });
     }
     if (isProtectedApiPath(url.pathname)) {
-      const limited = await enforceRateLimit(request, env, url.pathname === "/api/audit-request" ? url.pathname : "/api/admin");
+      const rateLimitPath = url.pathname === "/api/audit-request" || url.pathname === "/api/client/session" || url.pathname === "/api/client/workspace" ? url.pathname : "/api/admin";
+      const limited = await enforceRateLimit(request, env, rateLimitPath);
       if (limited) return limited;
     }
     if (url.pathname === "/api/admin" || url.pathname.startsWith("/api/admin/")) {
