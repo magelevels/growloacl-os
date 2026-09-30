@@ -53,6 +53,8 @@ test('client workspace gates access behind Supabase magic-link auth', () => {
   assert.match(page, /src="\/app\/auth\.js"/);
   assert.match(auth, /\/api\/auth\/config/);
   assert.match(auth, /\/api\/client\/session/);
+  assert.match(auth, /\/api\/client\/workspace/);
+  assert.match(read('public/app/app.js'), /hydrateWorkspace/);
   assert.match(auth, /shouldCreateUser: false/);
 });
 

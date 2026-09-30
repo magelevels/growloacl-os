@@ -19,6 +19,7 @@ const MAX_TURNSTILE_TOKEN_BYTES = 2_048;
 const LEAD_STATUSES = new Set(STAGES);
 const RATE_LIMIT_RETRY_AFTER_SECONDS = 60;
 const MAX_CLIENT_TOKEN_BYTES = 4096;
+const MAX_CLIENT_WORKSPACE_BYTES = 64_000;
 
 function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), { status, headers: { ...JSON_HEADERS, ...extraHeaders } });
@@ -38,11 +39,11 @@ function requestOriginAllowed(request) {
 }
 
 function isProtectedApiPath(pathname) {
-  return pathname === "/api/audit-request" || pathname === "/api/client/session" || pathname === "/api/admin" || pathname.startsWith("/api/admin/");
+  return pathname === "/api/audit-request" || pathname === "/api/client/session" || pathname === "/api/client/workspace" || pathname === "/api/admin" || pathname.startsWith("/api/admin/");
 }
 
 async function enforceRateLimit(request, env, pathname) {
-  const limiter = pathname === "/api/audit-request" ? env.AUDIT_RATE_LIMITER : pathname === "/api/client/session" ? env.CLIENT_RATE_LIMITER : env.ADMIN_RATE_LIMITER;
+  const limiter = pathname === "/api/audit-request" ? env.AUDIT_RATE_LIMITER : pathname === "/api/client/session" || pathname === "/api/client/workspace" ? env.CLIENT_RATE_LIMITER : env.ADMIN_RATE_LIMITER;
   if (!limiter) return null;
 
   // Cloudflare supplies this header at the edge. Never fall back to a
@@ -167,6 +168,79 @@ async function requireClient(request, env) {
     return { response: json({ error: "Client sign-in is temporarily unavailable." }, 503) };
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+function parseWorkspaceJson(value, fallback) {
+  try {
+    const parsed = JSON.parse(value || "");
+    return parsed && typeof parsed === "object" && Array.isArray(parsed) === Array.isArray(fallback) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function validateClientWorkspace(body) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) return { error: "Invalid workspace." };
+  const client = body.client;
+  if (!client || typeof client !== "object" || Array.isArray(client)) return { error: "Client details are required." };
+  const clean = (value, max) => typeof value === "string" ? value.replace(/[\u0000-\u001F\u007F]/g, " ").replace(/\s+/g, " ").trim().slice(0, max) : "";
+  const normalisedClient = {
+    businessName: clean(client.businessName, 120),
+    businessType: clean(client.businessType, 100),
+    businessLocation: clean(client.businessLocation, 120),
+    primaryGoal: clean(client.primaryGoal, 80),
+    usp: clean(client.usp, 1_000),
+  };
+  if (!normalisedClient.businessName) return { error: "Business name is required." };
+  const planDone = body.planDone && typeof body.planDone === "object" && !Array.isArray(body.planDone) ? body.planDone : {};
+  const safePlanDone = Object.fromEntries(Object.entries(planDone).slice(0, 100).map(([key, value]) => [clean(key, 40), value === true]));
+  const leads = Array.isArray(body.leads) ? body.leads.slice(0, 200).map(lead => ({
+    name: clean(lead?.name, 120),
+    stage: clean(lead?.stage, 40),
+    value: Number.isFinite(Number(lead?.value)) ? Math.max(0, Math.min(100000000, Number(lead.value))) : 0,
+  })).filter(lead => lead.name) : [];
+  return { data: { client: normalisedClient, planDone: safePlanDone, leads } };
+}
+
+async function getClientWorkspace(env, userId) {
+  if (!env.DB) return json({ error: "Client storage is not configured." }, 503);
+  try {
+    const row = await env.DB.prepare("SELECT business_name, business_type, business_location, primary_goal, usp, plan_done, leads FROM client_workspaces WHERE user_id = ?").bind(userId).first();
+    if (!row) return json({ ok: true, workspace: null });
+    return json({ ok: true, workspace: {
+      client: { businessName: row.business_name, businessType: row.business_type, businessLocation: row.business_location, primaryGoal: row.primary_goal, usp: row.usp },
+      planDone: parseWorkspaceJson(row.plan_done, {}),
+      leads: parseWorkspaceJson(row.leads, []),
+    } });
+  } catch (error) {
+    console.error(JSON.stringify({ event: "client_workspace_read_failed", message: error instanceof Error ? error.message : "unknown" }));
+    return json({ error: "Could not load your workspace." }, 500);
+  }
+}
+
+async function saveClientWorkspace(request, env, userId) {
+  if (!env.DB) return json({ error: "Client storage is not configured." }, 503);
+  if (!(request.headers.get("content-type") || "").toLowerCase().startsWith("application/json")) return json({ error: "Send JSON." }, 415);
+  let body;
+  try { body = await readJson(request, MAX_CLIENT_WORKSPACE_BYTES); }
+  catch (error) { return json({ error: error instanceof RangeError ? "Request is too large." : "Invalid JSON." }, error instanceof RangeError ? 413 : 400); }
+  const validated = validateClientWorkspace(body);
+  if (validated.error) return json({ error: validated.error }, 422);
+  const { client, planDone, leads } = validated.data;
+  try {
+    await env.DB.prepare(`INSERT INTO client_workspaces
+      (user_id, business_name, business_type, business_location, primary_goal, usp, plan_done, leads)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(user_id) DO UPDATE SET business_name = excluded.business_name, business_type = excluded.business_type,
+      business_location = excluded.business_location, primary_goal = excluded.primary_goal, usp = excluded.usp,
+      plan_done = excluded.plan_done, leads = excluded.leads, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`)
+      .bind(userId, client.businessName, client.businessType, client.businessLocation, client.primaryGoal, client.usp, JSON.stringify(planDone), JSON.stringify(leads))
+      .run();
+    return json({ ok: true });
+  } catch (error) {
+    console.error(JSON.stringify({ event: "client_workspace_write_failed", message: error instanceof Error ? error.message : "unknown" }));
+    return json({ error: "Could not save your workspace." }, 500);
   }
 }
 
@@ -365,11 +439,14 @@ export default {
       if (request.method === "GET") return authConfig(env);
       return json({ error: "Method not allowed." }, 405, { allow: "GET" });
     }
-    if (url.pathname === "/api/client/session") {
-      if (request.method !== "GET") return json({ error: "Method not allowed." }, 405, { allow: "GET" });
+    if (url.pathname === "/api/client/session" || url.pathname === "/api/client/workspace") {
+      if (url.pathname === "/api/client/session" && request.method !== "GET") return json({ error: "Method not allowed." }, 405, { allow: "GET" });
+      if (url.pathname === "/api/client/workspace" && !["GET", "PUT"].includes(request.method)) return json({ error: "Method not allowed." }, 405, { allow: "GET, PUT" });
       const client = await requireClient(request, env);
       if (client.response) return client.response;
-      return json({ ok: true, user: client.user });
+      if (url.pathname === "/api/client/session") return json({ ok: true, user: client.user });
+      if (request.method === "GET") return getClientWorkspace(env, client.user.id);
+      return saveClientWorkspace(request, env, client.user.id);
     }
     if (url.pathname === "/api/admin/summary") {
       if (request.method === "GET") return salesSummary(env);

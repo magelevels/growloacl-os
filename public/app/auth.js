@@ -75,6 +75,16 @@ async function verify() {
   return body?.user || null;
 }
 
+async function clientApi(path, options = {}) {
+  if (!session?.access_token) throw new Error("Sign-in required.");
+  const send = () => fetch(path, { ...options, headers: { accept: "application/json", ...(options.body ? { "content-type": "application/json" } : {}), authorization: `Bearer ${session.access_token}`, ...(options.headers || {}) } });
+  let response = await send();
+  if (response.status === 401 && await refresh()) response = await send();
+  const body = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(body?.error || "Workspace request failed.");
+  return body;
+}
+
 function showSignedIn(user) {
   accountEmail.textContent = user.email || "your invited account";
   accountCard.hidden = false;
@@ -82,9 +92,15 @@ function showSignedIn(user) {
   appShell.hidden = false;
   document.documentElement.classList.remove("auth-pending");
   window.growlocalClientUser = user;
+  window.growlocalClientApi = {
+    getWorkspace: () => clientApi("/api/client/workspace"),
+    saveWorkspace: workspace => clientApi("/api/client/workspace", { method: "PUT", body: JSON.stringify(workspace) }),
+  };
 }
 
 function showSignedOut(text = "") {
+  window.growlocalClientApi = null;
+  window.growlocalClientUser = null;
   accountCard.hidden = true;
   authGate.hidden = false;
   appShell.hidden = true;

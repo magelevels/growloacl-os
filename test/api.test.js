@@ -55,6 +55,22 @@ function failingRateLimiter() {
   return { async limit() { throw new Error("binding unavailable"); } };
 }
 
+function clientWorkspaceDb(row = null, calls = []) {
+  return {
+    prepare(sql) {
+      return {
+        bind(...values) {
+          calls.push({ sql, values });
+          return {
+            async first() { return row; },
+            async run() { return { success: true, meta: { changes: 1 } }; },
+          };
+        },
+      };
+    },
+  };
+}
+
 test("creates a lead through the POST-only route", async () => {
   const calls = [];
   const response = await worker.fetch(request("POST", payload), envWithDb(calls));
@@ -128,6 +144,28 @@ test("rejects client sessions without a bearer token", async () => {
   const response = await worker.fetch(authRequest("/api/client/session"), { SUPABASE_URL: "https://project.supabase.co", SUPABASE_ANON_KEY: "anon-key" });
   assert.equal(response.status, 401);
   assert.equal(response.headers.get("www-authenticate"), "Bearer");
+});
+
+test("scopes client workspace reads and writes to the verified Supabase user", async () => {
+  const originalFetch = globalThis.fetch;
+  const calls = [];
+  globalThis.fetch = async () => new Response(JSON.stringify({ id: "user-1", email: "client@example.com" }), { status: 200 });
+  try {
+    const env = { SUPABASE_URL: "https://project.supabase.co", SUPABASE_ANON_KEY: "anon-key", DB: clientWorkspaceDb(null, calls) };
+    const read = await worker.fetch(authRequest("/api/client/workspace", "GET", { authorization: "Bearer access-token" }), env);
+    assert.equal(read.status, 200);
+    assert.deepEqual(await read.json(), { ok: true, workspace: null });
+    const write = await worker.fetch(new Request("https://example.test/api/client/workspace", {
+      method: "PUT",
+      headers: { authorization: "Bearer access-token", "content-type": "application/json" },
+      body: JSON.stringify({ client: { businessName: "Example Café", businessType: "Café", businessLocation: "London", primaryGoal: "Repeat visits", usp: "Friendly" }, planDone: { "0-1": true }, leads: [{ name: "Prospect", stage: "New lead", value: 149 }] }),
+    }), env);
+    assert.equal(write.status, 200);
+    assert.equal(calls[1].values[0], "user-1");
+    assert.equal(calls[1].values[1], "Example Café");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 });
 
 test("fails closed when Cloudflare cannot answer the rate-limit check", async () => {

@@ -19,6 +19,9 @@ the existing Cloudflare-protected token flow.
    wrangler secret put SUPABASE_ANON_KEY
    ```
 
+6. Apply the `0004_client_workspaces.sql` migration to the production D1
+   database before enabling client saves.
+
 The publishable key is returned to the browser by `/api/auth/config`; it is
 safe to expose only because Supabase Auth and the server-side session check are
 still required. Never use a Supabase service-role key in this Worker or in the
@@ -32,6 +35,7 @@ browser.
   to verify the bearer token before opening the workspace.
 - The client session endpoint is rate-limited and never returns database data.
 
-The current workspace remains a local demo while the client data API is being
-connected. Once client records are moved server-side, every read and write
-must be scoped to the verified Supabase user ID.
+Client workspace data is now stored in D1 under the verified Supabase user ID.
+The browser keeps a short local copy for responsive editing, while saves are
+also sent through the authenticated Worker API. Every read and write is scoped
+to the signed-in user; no client can request another user's workspace ID.
