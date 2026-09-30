@@ -22,6 +22,10 @@ function request(method, body, headers = {}) {
   });
 }
 
+function authRequest(path, method = "GET", headers = {}) {
+  return new Request(`https://example.test${path}`, { method, headers });
+}
+
 function envWithDb(calls = []) {
   return {
     DB: {
@@ -89,6 +93,41 @@ test("rate-limits admin routes before authentication", async () => {
   const response = await worker.fetch(new Request("https://example.test/api/admin/leads"), { ...envWithDb(), ADMIN_RATE_LIMITER: rateLimiter({ success: false, calls }) });
   assert.equal(response.status, 429);
   assert.deepEqual(calls, [{ key: "/api/admin:unknown" }]);
+});
+
+test("exposes only the configured Supabase public client settings", async () => {
+  const missing = await worker.fetch(authRequest("/api/auth/config"), {});
+  assert.equal(missing.status, 503);
+  const response = await worker.fetch(authRequest("/api/auth/config"), { SUPABASE_URL: "https://project.supabase.co", SUPABASE_ANON_KEY: "anon-key" });
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true, url: "https://project.supabase.co", anonKey: "anon-key" });
+});
+
+test("validates a client session with Supabase before returning identity", async () => {
+  const originalFetch = globalThis.fetch;
+  let called;
+  globalThis.fetch = async (input, init) => {
+    called = { input, init };
+    return new Response(JSON.stringify({ id: "user-1", email: "client@example.com" }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  try {
+    const response = await worker.fetch(authRequest("/api/client/session", "GET", { authorization: "Bearer access-token" }), {
+      SUPABASE_URL: "https://project.supabase.co",
+      SUPABASE_ANON_KEY: "anon-key",
+    });
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), { ok: true, user: { id: "user-1", email: "client@example.com" } });
+    assert.equal(called.input, "https://project.supabase.co/auth/v1/user");
+    assert.equal(called.init.headers.authorization, "Bearer access-token");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("rejects client sessions without a bearer token", async () => {
+  const response = await worker.fetch(authRequest("/api/client/session"), { SUPABASE_URL: "https://project.supabase.co", SUPABASE_ANON_KEY: "anon-key" });
+  assert.equal(response.status, 401);
+  assert.equal(response.headers.get("www-authenticate"), "Bearer");
 });
 
 test("fails closed when Cloudflare cannot answer the rate-limit check", async () => {

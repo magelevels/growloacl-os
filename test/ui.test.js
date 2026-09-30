@@ -43,6 +43,19 @@ test('shared sign-in page separates client and admin workspaces', () => {
   assert.match(styles, /login-option--admin/);
 });
 
+test('client workspace gates access behind Supabase magic-link auth', () => {
+  const page = read('public/app/index.html');
+  const auth = read('public/app/auth.js');
+  assert.match(page, /id="authGate"/);
+  assert.match(page, /id="authForm"/);
+  assert.match(page, /id="authEmail"/);
+  assert.match(page, /id="authSignout"/);
+  assert.match(page, /src="\/app\/auth\.js"/);
+  assert.match(auth, /\/api\/auth\/config/);
+  assert.match(auth, /\/api\/client\/session/);
+  assert.match(auth, /shouldCreateUser: false/);
+});
+
 test('public homepage includes a safe, accessible entry transition', () => {
   const page = read('public/index.html');
   const loader = read('public/loader.js');
@@ -78,7 +91,7 @@ test('public assets enforce a strict script policy without inline handlers', () 
   assert.match(headers, /X-DNS-Prefetch-Control: off/);
   assert.match(headers, /X-Permitted-Cross-Domain-Policies: none/);
   assert.match(headers, /script-src 'self' https:\/\/challenges\.cloudflare\.com/);
-  assert.match(headers, /connect-src 'self' https:\/\/challenges\.cloudflare\.com/);
+  assert.match(headers, /connect-src 'self' https:\/\/challenges\.cloudflare\.com https:\/\/\*\.supabase\.co/);
   assert.match(headers, /frame-src https:\/\/challenges\.cloudflare\.com/);
   assert.match(page, /<script src="\/js-flag\.js"><\/script>/);
   assert.match(page, /<script src="\/turnstile\.js" defer><\/script>/);
@@ -96,7 +109,7 @@ test('all shipped HTML and scripts avoid inline style and event attributes', () 
   for (const path of ['public/index.html', 'public/404.html', 'public/app/index.html', 'public/admin/index.html', 'public/privacy/index.html', 'public/terms/index.html']) {
     assert.doesNotMatch(read(path), /\sstyle="/);
   }
-  for (const path of ['public/app/app.js', 'public/admin/admin.js']) {
+  for (const path of ['public/app/app.js', 'public/app/auth.js', 'public/admin/admin.js']) {
     assert.doesNotMatch(read(path), /\sstyle="/);
   }
 });

@@ -18,6 +18,7 @@ const MAX_BODY_BYTES = 12_000;
 const MAX_TURNSTILE_TOKEN_BYTES = 2_048;
 const LEAD_STATUSES = new Set(STAGES);
 const RATE_LIMIT_RETRY_AFTER_SECONDS = 60;
+const MAX_CLIENT_TOKEN_BYTES = 4096;
 
 function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), { status, headers: { ...JSON_HEADERS, ...extraHeaders } });
@@ -37,11 +38,11 @@ function requestOriginAllowed(request) {
 }
 
 function isProtectedApiPath(pathname) {
-  return pathname === "/api/audit-request" || pathname === "/api/admin" || pathname.startsWith("/api/admin/");
+  return pathname === "/api/audit-request" || pathname === "/api/client/session" || pathname === "/api/admin" || pathname.startsWith("/api/admin/");
 }
 
 async function enforceRateLimit(request, env, pathname) {
-  const limiter = pathname === "/api/audit-request" ? env.AUDIT_RATE_LIMITER : env.ADMIN_RATE_LIMITER;
+  const limiter = pathname === "/api/audit-request" ? env.AUDIT_RATE_LIMITER : pathname === "/api/client/session" ? env.CLIENT_RATE_LIMITER : env.ADMIN_RATE_LIMITER;
   if (!limiter) return null;
 
   // Cloudflare supplies this header at the edge. Never fall back to a
@@ -120,6 +121,53 @@ async function requireAdmin(request, env) {
     return json({ error: "Unauthorized." }, 401, { "www-authenticate": "Bearer" });
   }
   return null;
+}
+
+function supabaseConfig(env) {
+  const url = typeof env.SUPABASE_URL === "string" ? env.SUPABASE_URL.trim().replace(/\/$/, "") : "";
+  const anonKey = typeof env.SUPABASE_ANON_KEY === "string" ? env.SUPABASE_ANON_KEY.trim() : "";
+  if (!url || !anonKey) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:") return null;
+  } catch {
+    return null;
+  }
+  return { url, anonKey };
+}
+
+function authConfig(env) {
+  const config = supabaseConfig(env);
+  if (!config) return json({ error: "Client sign-in is not configured." }, 503);
+  // The publishable/anon key is intentionally public. It is safe to expose
+  // only alongside Supabase's RLS and server-side session checks.
+  return json({ ok: true, url: config.url, anonKey: config.anonKey });
+}
+
+async function requireClient(request, env) {
+  const config = supabaseConfig(env);
+  if (!config) return { response: json({ error: "Client sign-in is not configured." }, 503) };
+  const auth = request.headers.get("authorization") || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+  if (!token || token.length > MAX_CLIENT_TOKEN_BYTES) return { response: json({ error: "Sign-in required." }, 401, { "www-authenticate": "Bearer" }) };
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5_000);
+  try {
+    const response = await fetch(`${config.url}/auth/v1/user`, {
+      headers: { accept: "application/json", apikey: config.anonKey, authorization: `Bearer ${token}` },
+      signal: controller.signal,
+    });
+    if (response.status === 401 || response.status === 403) return { response: json({ error: "Sign-in required." }, 401, { "www-authenticate": "Bearer" }) };
+    if (!response.ok) return { response: json({ error: "Client sign-in is temporarily unavailable." }, 503) };
+    const user = await response.json().catch(() => null);
+    if (!user?.id) return { response: json({ error: "Sign-in required." }, 401, { "www-authenticate": "Bearer" }) };
+    return { user: { id: String(user.id), email: typeof user.email === "string" ? user.email : "" } };
+  } catch {
+    return { response: json({ error: "Client sign-in is temporarily unavailable." }, 503) };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 async function verifyTurnstile(request, token, secret) {
@@ -312,6 +360,16 @@ export default {
     if (url.pathname === "/api/admin" || url.pathname.startsWith("/api/admin/")) {
       const denied = await requireAdmin(request, env);
       if (denied) return denied;
+    }
+    if (url.pathname === "/api/auth/config") {
+      if (request.method === "GET") return authConfig(env);
+      return json({ error: "Method not allowed." }, 405, { allow: "GET" });
+    }
+    if (url.pathname === "/api/client/session") {
+      if (request.method !== "GET") return json({ error: "Method not allowed." }, 405, { allow: "GET" });
+      const client = await requireClient(request, env);
+      if (client.response) return client.response;
+      return json({ ok: true, user: client.user });
     }
     if (url.pathname === "/api/admin/summary") {
       if (request.method === "GET") return salesSummary(env);
