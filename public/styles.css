@@ -107,7 +107,7 @@ body {
   color: var(--text-pure);
   opacity: 1;
   visibility: visible;
-  transition: opacity 420ms ease, visibility 420ms ease;
+  transition: opacity 300ms ease, visibility 300ms ease;
 }
 
 .js .site-loader { display: grid; }
@@ -124,7 +124,7 @@ body {
   justify-items: center;
   gap: 14px;
   width: min(240px, calc(100vw - 48px));
-  animation: site-loader-reveal 720ms cubic-bezier(.2, .75, .25, 1) both;
+  animation: site-loader-reveal 480ms cubic-bezier(.2, .75, .25, 1) both;
 }
 
 .site-loader__mark {

@@ -39,8 +39,9 @@ test('public homepage includes a safe, accessible entry transition', () => {
   assert.match(page, /role="status"/);
   assert.match(page, /aria-label="Loading GrowLocal"/);
   assert.match(loader, /prefers-reduced-motion/);
-  assert.match(loader, /minimumDisplay = 760/);
-  assert.match(loader, /3200/);
+  assert.match(loader, /minimumDisplay = 320/);
+  assert.match(loader, /1600/);
+  assert.match(loader, /DOMContentLoaded/);
   assert.match(loader, /aria-hidden/);
 });
 

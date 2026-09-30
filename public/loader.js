@@ -4,7 +4,7 @@
 
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const started = performance.now();
-  const minimumDisplay = 760;
+  const minimumDisplay = 320;
   let hidden = false;
 
   const hide = () => {
@@ -20,7 +20,7 @@
     }, wait);
   };
 
-  if (document.readyState === "complete") hide();
-  else window.addEventListener("load", hide, { once: true });
-  window.setTimeout(hide, 3200);
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", hide, { once: true });
+  else hide();
+  window.setTimeout(hide, 1600);
 })();
