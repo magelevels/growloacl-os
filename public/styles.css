@@ -943,6 +943,19 @@ h1 {
   width: 100%;
 }
 
+.pricing-note {
+  max-width: 680px;
+  margin: 24px auto 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.pricing-note strong {
+  color: var(--text-pure);
+}
+
 /* ==========================================================================
    Audit Form Section
    ========================================================================== */
@@ -976,6 +989,14 @@ h1 {
   color: var(--muted);
   font-size: 15px;
   line-height: 1.8;
+}
+
+.audit-meta {
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  margin: -8px 0 20px;
+  color: var(--mint) !important;
+  font-weight: 650;
 }
 
 .audit-copy ul {

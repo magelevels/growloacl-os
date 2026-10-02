@@ -41,9 +41,9 @@
         <a href="#pricing">Pricing</a>
       </div>
       <div class="nav-actions">
-        <a class="btn btn-ghost" href="/login/">Sign in</a>
-        <a class="btn btn-ghost" href="/app/">Explore live demo</a>
-        <a class="btn btn-primary" href="#audit">Get a free growth audit</a>
+        <a class="btn btn-ghost" href="/login/" data-track="nav_sign_in">Sign in</a>
+        <a class="btn btn-ghost" href="/app/" data-track="nav_demo">Explore live demo</a>
+        <a class="btn btn-primary" href="#audit" data-location="nav">Get a free growth audit</a>
       </div>
     </div>
   </nav>
@@ -62,7 +62,7 @@
             Get my free growth audit
             <svg class="btn-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
           </a>
-          <a class="btn btn-ghost" href="#system">See the approach</a>
+          <a class="btn btn-ghost" href="#system" data-track="hero_approach">See the approach</a>
         </div>
         <div class="micro">
           <span class="micro-pill">
@@ -237,14 +237,14 @@
         <div class="section-head">
           <span class="kicker">Simple pricing</span>
           <h2>Start with clarity. Stay for the rhythm.</h2>
-          <p>Pricing is deliberately simple while GrowLocal validates its first client cohort.</p>
+          <p>Start with the level of support that fits. Every option is built around one measurable next move each month.</p>
         </div>
         <div class="pricing">
           <article class="card price-card">
             <span class="kicker">SETUP</span>
             <h3>Growth Setup</h3>
             <div class="price">£199 <small>one-off</small></div>
-            <p>For businesses that need a clear commercial plan before doing more marketing.</p>
+            <p>For owners who want the right 90-day priorities before spending more on marketing.</p>
             <ul>
               <li>Growth audit</li>
               <li>90-day priorities</li>
@@ -259,7 +259,7 @@
             <span class="kicker">MONTHLY</span>
             <h3>Growth Partner</h3>
             <div class="price">£149 <small>/ month</small></div>
-            <p>A monthly operating rhythm without hiring an in-house marketer.</p>
+            <p>A monthly scorecard and execution rhythm without hiring an in-house marketer.</p>
             <ul>
               <li>Monthly scorecard</li>
               <li>Conversion-led content</li>
@@ -274,7 +274,7 @@
             <span class="kicker">PREMIUM</span>
             <h3>Done-With-You</h3>
             <div class="price">£349 <small>/ month</small></div>
-            <p>Closer execution support for owners who want more hands-on help.</p>
+            <p>Hands-on help turning the plan into campaigns, follow-up and learning.</p>
             <ul>
               <li>Everything in Growth Partner</li>
               <li>Weekly check-in</li>
@@ -284,6 +284,7 @@
             <a class="btn btn-ghost" href="/app/">Explore live demo ↗</a>
           </article>
         </div>
+        <p class="pricing-note"><strong>Not sure where to start?</strong> The free audit shows which level fits your next move. There is no obligation to buy.</p>
       </div>
     </section>
 
@@ -292,7 +293,8 @@
         <div class="audit-copy">
           <span class="eyebrow">Free growth audit</span>
           <h2>Find the next best moves for your business.</h2>
-          <p>Tell us where the business is today. We’ll review the biggest opportunities across visibility, conversion, repeat customers and reputation, then contact you about practical next steps.</p>
+          <p>Tell us where the business is today. We’ll identify the biggest commercial gap across visibility, conversion, repeat customers and reputation, then contact you about the next practical move.</p>
+          <p class="audit-meta">Takes about two minutes · No obligation · No mailing-list signup</p>
           <ul>
             <li>A focused, no-obligation review</li>
             <li>Commercial opportunities in plain English</li>
@@ -364,7 +366,7 @@
             <h3>Your audit request is in.</h3>
             <p>Thanks. Your details have been securely saved and we’ll review the business before getting in touch.</p>
             <p class="reference"></p>
-            <a class="btn btn-ghost" href="/app/">Explore live demo ↗</a>
+            <a class="btn btn-ghost" href="/app/" data-track="success_demo">Explore live demo ↗</a>
           </div>
         </div>
       </div>
@@ -385,6 +387,7 @@
       <span>© 2026 GrowLocal</span>
     </div>
   </footer>
+  <script src="/analytics.js" defer></script>
   <script src="/turnstile.js" defer></script>
   <script src="/audit.js" defer></script>
   <script src="/motion.js" defer></script>

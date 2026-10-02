@@ -72,6 +72,21 @@ test('public homepage includes a safe, accessible entry transition', () => {
   assert.match(loader, /aria-hidden/);
 });
 
+test('public funnel includes measurable, privacy-conscious conversion events', () => {
+  const page = read('public/index.html');
+  const analytics = read('public/analytics.js');
+  const audit = read('public/audit.js');
+
+  assert.match(page, /src="\/analytics\.js"/);
+  assert.match(page, /class="pricing-note"/);
+  assert.match(page, /class="audit-meta"/);
+  assert.match(analytics, /growlocalAnalytics/);
+  assert.match(analytics, /cta_clicked/);
+  assert.match(audit, /audit_form_started/);
+  assert.match(audit, /audit_request_completed/);
+  assert.doesNotMatch(analytics, /businessName|contactName|email/);
+});
+
 test('public assets enforce a strict script policy without inline handlers', () => {
   const headers = read('public/_headers');
   const page = read('public/index.html');
