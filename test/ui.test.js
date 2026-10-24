@@ -58,6 +58,18 @@ test('client workspace gates access behind Supabase magic-link auth', () => {
   assert.match(auth, /shouldCreateUser: false/);
 });
 
+test('client workspace turns an insight into an owned, measurable campaign', () => {
+  const page = read('public/app/index.html');
+  const app = read('public/app/app.js');
+  assert.match(page, /id="generateCampaign"/);
+  assert.match(page, /id="campaignList"/);
+  assert.match(page, /Next-Move Campaigns/);
+  assert.match(app, /campaignDraft/);
+  assert.match(app, /successMetric/);
+  assert.match(app, /copyCampaign/);
+  assert.match(app, /data-campaign-status/);
+});
+
 test('public homepage includes a safe, accessible entry transition', () => {
   const page = read('public/index.html');
   const loader = read('public/loader.js');

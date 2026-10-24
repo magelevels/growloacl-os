@@ -1,3 +1,10 @@
+## V11 owner action engine (2026-10-24)
+
+- Added Next-Move Campaigns to the client workspace: owners can generate a focused campaign from their stated goal, then see the audience, offer, channel, owner, deadline and success measure in one place.
+- Added draft, approved, live and completed states plus a proof/result field and copyable campaign brief, so each recommendation can move from idea to evidence.
+- Persisted campaign state per authenticated Supabase workspace with bounded server-side validation and a D1 migration.
+- Added API and UI regression coverage; all 49 Node tests, syntax checks, diff checks and Wrangler dry-run validation pass.
+
 ## V11 security hardening (2026-09-28)
 
 - Added native Cloudflare Worker Rate Limiting bindings for public audit submissions (5 requests per minute per edge IP) and admin API access (120 requests per minute per edge IP), returning `429` with `Retry-After` before expensive validation or database work.

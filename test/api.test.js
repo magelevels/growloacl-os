@@ -158,11 +158,25 @@ test("scopes client workspace reads and writes to the verified Supabase user", a
     const write = await worker.fetch(new Request("https://example.test/api/client/workspace", {
       method: "PUT",
       headers: { authorization: "Bearer access-token", "content-type": "application/json" },
-      body: JSON.stringify({ client: { businessName: "Example Café", businessType: "Café", businessLocation: "London", primaryGoal: "Repeat visits", usp: "Friendly" }, planDone: { "0-1": true }, leads: [{ name: "Prospect", stage: "New lead", value: 149 }] }),
+      body: JSON.stringify({ client: { businessName: "Example Café", businessType: "Café", businessLocation: "London", primaryGoal: "Repeat visits", usp: "Friendly" }, planDone: { "0-1": true }, leads: [{ name: "Prospect", stage: "New lead", value: 149 }], campaigns: [{ id: "campaign-1", name: "14-day return reason", audience: "First-time customers", offer: "A small add-on on the next visit", channel: "In-store", owner: "Owner", deadline: "Within 14 days", status: "approved", successMetric: "10 redemptions", result: "", createdAt: "2026-10-24T12:00:00.000Z" }] }),
     }), env);
     assert.equal(write.status, 200);
     assert.equal(calls[1].values[0], "user-1");
     assert.equal(calls[1].values[1], "Example Café");
+    assert.deepEqual(JSON.parse(calls[1].values[8]), [{ id: "campaign-1", name: "14-day return reason", audience: "First-time customers", offer: "A small add-on on the next visit", channel: "In-store", owner: "Owner", deadline: "Within 14 days", status: "approved", successMetric: "10 redemptions", result: "", createdAt: "2026-10-24T12:00:00.000Z" }]);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("returns persisted next-move campaigns with a client workspace", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({ id: "user-1", email: "client@example.com" }), { status: 200 });
+  try {
+    const row = { business_name: "Example Café", business_type: "Café", business_location: "London", primary_goal: "Repeat visits", usp: "Friendly", plan_done: "{}", leads: "[]", campaigns: JSON.stringify([{ id: "campaign-1", name: "Return reason", status: "approved" }]) };
+    const response = await worker.fetch(authRequest("/api/client/workspace", "GET", { authorization: "Bearer access-token" }), { SUPABASE_URL: "https://project.supabase.co", SUPABASE_ANON_KEY: "anon-key", DB: clientWorkspaceDb(row) });
+    assert.equal(response.status, 200);
+    assert.deepEqual((await response.json()).workspace.campaigns, [{ id: "campaign-1", name: "Return reason", status: "approved" }]);
   } finally {
     globalThis.fetch = originalFetch;
   }

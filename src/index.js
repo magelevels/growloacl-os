@@ -20,6 +20,8 @@ const LEAD_STATUSES = new Set(STAGES);
 const RATE_LIMIT_RETRY_AFTER_SECONDS = 60;
 const MAX_CLIENT_TOKEN_BYTES = 4096;
 const MAX_CLIENT_WORKSPACE_BYTES = 64_000;
+const CAMPAIGN_STATUSES = new Set(["draft", "approved", "live", "completed"]);
+const CAMPAIGN_CHANNELS = new Set(["In-store", "Email", "Instagram", "Google Business Profile", "SMS", "Website"]);
 
 function json(body, status = 200, extraHeaders = {}) {
   return new Response(JSON.stringify(body), { status, headers: { ...JSON_HEADERS, ...extraHeaders } });
@@ -200,18 +202,36 @@ function validateClientWorkspace(body) {
     stage: clean(lead?.stage, 40),
     value: Number.isFinite(Number(lead?.value)) ? Math.max(0, Math.min(100000000, Number(lead.value))) : 0,
   })).filter(lead => lead.name) : [];
-  return { data: { client: normalisedClient, planDone: safePlanDone, leads } };
+  const campaigns = Array.isArray(body.campaigns) ? body.campaigns.slice(0, 50).map((campaign, index) => {
+    const status = CAMPAIGN_STATUSES.has(campaign?.status) ? campaign.status : "draft";
+    const channel = CAMPAIGN_CHANNELS.has(campaign?.channel) ? campaign.channel : "In-store";
+    return {
+      id: clean(campaign?.id, 80).replace(/[^a-zA-Z0-9_-]/g, "") || `campaign-${index + 1}`,
+      name: clean(campaign?.name, 120),
+      audience: clean(campaign?.audience, 180),
+      offer: clean(campaign?.offer, 300),
+      channel,
+      owner: clean(campaign?.owner, 80),
+      deadline: clean(campaign?.deadline, 40),
+      status,
+      successMetric: clean(campaign?.successMetric, 180),
+      result: clean(campaign?.result, 180),
+      createdAt: clean(campaign?.createdAt, 40),
+    };
+  }).filter(campaign => campaign.name && campaign.offer) : [];
+  return { data: { client: normalisedClient, planDone: safePlanDone, leads, campaigns } };
 }
 
 async function getClientWorkspace(env, userId) {
   if (!env.DB) return json({ error: "Client storage is not configured." }, 503);
   try {
-    const row = await env.DB.prepare("SELECT business_name, business_type, business_location, primary_goal, usp, plan_done, leads FROM client_workspaces WHERE user_id = ?").bind(userId).first();
+    const row = await env.DB.prepare("SELECT business_name, business_type, business_location, primary_goal, usp, plan_done, leads, campaigns FROM client_workspaces WHERE user_id = ?").bind(userId).first();
     if (!row) return json({ ok: true, workspace: null });
     return json({ ok: true, workspace: {
       client: { businessName: row.business_name, businessType: row.business_type, businessLocation: row.business_location, primaryGoal: row.primary_goal, usp: row.usp },
       planDone: parseWorkspaceJson(row.plan_done, {}),
       leads: parseWorkspaceJson(row.leads, []),
+      campaigns: parseWorkspaceJson(row.campaigns, []),
     } });
   } catch (error) {
     console.error(JSON.stringify({ event: "client_workspace_read_failed", message: error instanceof Error ? error.message : "unknown" }));
@@ -227,15 +247,16 @@ async function saveClientWorkspace(request, env, userId) {
   catch (error) { return json({ error: error instanceof RangeError ? "Request is too large." : "Invalid JSON." }, error instanceof RangeError ? 413 : 400); }
   const validated = validateClientWorkspace(body);
   if (validated.error) return json({ error: validated.error }, 422);
-  const { client, planDone, leads } = validated.data;
+  const { client, planDone, leads, campaigns } = validated.data;
   try {
     await env.DB.prepare(`INSERT INTO client_workspaces
-      (user_id, business_name, business_type, business_location, primary_goal, usp, plan_done, leads)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      (user_id, business_name, business_type, business_location, primary_goal, usp, plan_done, leads, campaigns)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(user_id) DO UPDATE SET business_name = excluded.business_name, business_type = excluded.business_type,
       business_location = excluded.business_location, primary_goal = excluded.primary_goal, usp = excluded.usp,
-      plan_done = excluded.plan_done, leads = excluded.leads, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`)
-      .bind(userId, client.businessName, client.businessType, client.businessLocation, client.primaryGoal, client.usp, JSON.stringify(planDone), JSON.stringify(leads))
+      plan_done = excluded.plan_done, leads = excluded.leads, campaigns = excluded.campaigns,
+      updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`)
+      .bind(userId, client.businessName, client.businessType, client.businessLocation, client.primaryGoal, client.usp, JSON.stringify(planDone), JSON.stringify(leads), JSON.stringify(campaigns))
       .run();
     return json({ ok: true });
   } catch (error) {
